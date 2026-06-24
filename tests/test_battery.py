@@ -50,8 +50,8 @@ def test_cycle_cap_respected():
 
 def test_round_trip_efficiency():
     bat = make_bat(current_soc_kwh=0.0, round_trip_eff=0.90)
-    grid_drawn = bat.charge()          # energy taken from grid
-    stored = bat.current_soc_kwh      # energy in battery = grid_drawn * eff
+    grid_drawn = bat.charge()
+    stored = bat.current_soc_kwh
     assert abs(stored - grid_drawn * 0.90) < 1e-6
 
 

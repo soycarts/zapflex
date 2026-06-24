@@ -48,7 +48,9 @@ create table if not exists households (
   annual_kwh          numeric not null default 3500,
   has_solar           boolean not null default false,
   solar_kwp           numeric not null default 0,
+  has_ev              boolean not null default false,
   occupancy_profile   text not null default 'standard',
+  load_volatility     numeric not null default 0.15,
   created_at          timestamptz not null default now()
 );
 
@@ -149,13 +151,13 @@ insert into kill_switch (id, halted) values (1, false)
 -- benchmarks: oracle's perfect-hindsight result per customer per sim day,
 -- used by dbt to compute theoretical_optimal for the leaderboard.
 create table if not exists benchmarks (
-  id                  bigint generated always as identity primary key,
-  battery_id          bigint not null references batteries(id),
-  customer_id         bigint not null references customers(id),
-  sim_day             date not null,
-  optimal_cashflow    numeric not null,
-  created_at          timestamptz not null default now(),
-  unique (battery_id, sim_day)
+  id              bigint generated always as identity primary key,
+  customer_id     bigint not null references customers(id),
+  window_start    timestamptz not null,
+  window_end      timestamptz not null,
+  optimal_savings numeric not null,
+  updated_at      timestamptz not null default now(),
+  unique (customer_id, window_start)
 );
 
 -- Indexes for hot query paths.
