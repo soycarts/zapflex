@@ -129,6 +129,11 @@ def run_agent(conn, fleet: Fleet, agent: str, cycle: int) -> None:
                         approvals.append(r["approval"])
                     if r.get("task_id"):
                         tasks.append(r["task_id"])
+                # Deterministic safety net: the LLM often forgets to close finished
+                # work, so sweep the board for Trading tasks whose home is now at its
+                # best-fit forecast. Keeps the board a clean lifecycle, not a todo flood.
+                if agent == "trading":
+                    results.extend(scripted.close_completed_trading_tasks(ctx))
                 db.log_decision(conn, agent, action="llm cycle",
                                 rationale=plan.get("rationale", "") + " | " + "; ".join(results),
                                 cycle=cycle, sim_time=sim_time,

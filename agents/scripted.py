@@ -70,21 +70,58 @@ def ceo(ctx: Ctx) -> dict:
 
 
 # ---- Trading ------------------------------------------------------------------
+def _best_fit(household: dict) -> str:
+    """The highest forecast model that still earns its keep for this household.
+    EV homes top out at 'learned', solar-only at 'seasonal', the rest at 'naive'.
+    Lifting past best-fit predicts a routine the home lacks and loses yield, so
+    a home sitting on its best-fit has no Trading headroom left."""
+    if household.get("has_ev"):
+        return "learned"
+    if household.get("has_solar"):
+        return "seasonal"
+    return "naive"
+
+
+def close_completed_trading_tasks(ctx: Ctx) -> list[str]:
+    """Sweep the board and close every open Trading task whose named home has
+    already reached its best-fit forecast model — the work is done, so it should
+    not linger as a stale todo. Runs every cycle, in both LLM and scripted mode,
+    independent of whether a home was advanced this cycle. This is the deterministic
+    safety net that stops Trading tasks piling up when the brain forgets to close them.
+
+    Closes ALL matching tasks (the CEO files near-duplicate tasks per home), not
+    just one. Generic tasks naming no settled home are left for the brain to judge."""
+    settled = [c for c in ctx.fleet.customers if _best_fit(c.household) == c.model]
+    if not settled:
+        return []
+    open_tasks = db.fetchall(ctx.conn,
+        """select id, title from tasks where status in ('todo','doing')
+               and assigned_to='agent-trading' order by id""")
+    notes = []
+    for t in open_tasks:
+        title = t["title"].lower()
+        home = next((c for c in settled if c.handle.lower() in title), None)
+        if home:
+            ur = call(ctx, "update_task")(ctx, task_id=t["id"], status="done",
+                result=f"{home.handle} at best-fit forecast ('{home.model}'); no further headroom")
+            notes.append(ur["note"])
+    return notes
+
+
 def trading(ctx: Ctx) -> dict:
-    """Learn one home's routine per cycle, advancing its forecast model where it helps."""
+    """Learn one home's routine per cycle, advancing its forecast model where it helps,
+    then sweep the board so completed/stale Trading tasks are closed, not piled up."""
     candidates = []
     for c in ctx.fleet.customers:
         hh = c.household
-        if hh["has_ev"] and c.model != "learned":
-            target = "learned"
-        elif hh["has_solar"] and c.model == "naive":
-            target = "seasonal"
-        else:
-            continue
-        candidates.append((c.handle, target))
+        target = _best_fit(hh)
+        if target != c.model:
+            candidates.append((c.handle, target))
     if not candidates:
-        return {"action": "supervise", "rationale": "Every home is on its best-fit forecast; monitoring settlement.",
-                "results": []}
+        closed = close_completed_trading_tasks(ctx)
+        return {"action": "supervise",
+                "rationale": "Every home is on its best-fit forecast; monitoring settlement.",
+                "results": closed or ["fleet at best-fit; board clear"]}
     # Prefer the lowest current pct_of_optimal so the visible climb is the laggard's.
     pcts = {r["handle"]: (float(r["pct_of_optimal"]) if r["pct_of_optimal"] is not None else 1.0)
             for r in db.fetchall(ctx.conn, "select handle, pct_of_optimal from mart_leaderboard")}
@@ -93,17 +130,9 @@ def trading(ctx: Ctx) -> dict:
     r = call(ctx, "set_forecast_model")(ctx, handle=handle, model=target, sim_time=_sim_time(ctx.fleet))
     results = [r["note"]]
 
-    # Close the loop on the board: complete any open Trading task naming this home,
-    # so the work shows as done rather than piling up as a stale todo.
-    open_task = db.fetchone(ctx.conn,
-        """select id from tasks where status in ('todo','doing')
-               and assigned_to='agent-trading' and title ilike %s
-           order by id limit 1""",
-        (f"%{handle}%",))
-    if open_task:
-        ur = call(ctx, "update_task")(ctx, task_id=open_task["id"], status="done",
-                                      result=f"lifted forecast to '{target}'")
-        results.append(ur["note"])
+    # Close the loop on the board: the home just advanced is now at best-fit, and
+    # any other home already at best-fit gets its lingering tasks closed too.
+    results.extend(close_completed_trading_tasks(ctx))
     return {"action": "learned routine",
             "rationale": f"Watched {handle}'s settled load converge on a routine; lifting its forecast to '{target}' to capture the headroom.",
             "results": results,
