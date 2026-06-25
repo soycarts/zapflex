@@ -10,7 +10,8 @@ export async function GET() {
   try {
     const tasks = await q(
       `select id, title, phase, category, status, priority,
-              created_by_type, created_by_name, completed_by_type, completed_by_name,
+              created_by_type, created_by_name, assigned_to,
+              completed_by_type, completed_by_name,
               created_at, started_at, completed_at
        from tasks
        order by coalesce(completed_at, started_at, created_at) desc, id desc

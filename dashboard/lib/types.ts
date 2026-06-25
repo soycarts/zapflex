@@ -39,6 +39,7 @@ export type Task = {
   priority: number | null;
   created_by_type: string | null;
   created_by_name: string | null;
+  assigned_to: string | null;
   completed_by_type: string | null;
   completed_by_name: string | null;
   created_at: string;

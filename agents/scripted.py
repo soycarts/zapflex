@@ -48,7 +48,7 @@ def ceo(ctx: Ctx) -> dict:
         worst = min(laggards, key=lambda r: float(r["pct_of_optimal"]))
         r = call(ctx, "create_task")(ctx,
             title=f"Trading: learn {worst['handle']}'s routine (at {float(worst['pct_of_optimal'])*100:.0f}% of optimal)",
-            category="trading", priority=2)
+            category="trading", priority=2, assigned_to="trading")
         results.append(r["note"]); tasks.append(r.get("task_id"))
 
     # Once the fleet and P&L justify it, propose the licensing move to the human gate.

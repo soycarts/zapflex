@@ -20,7 +20,8 @@ export async function GET() {
         q(`select open_tickets, escalated, avg_response_secs, oldest_open_age_secs
            from mart_support limit 1`),
         q(`select id, title, phase, category, status, priority,
-                  created_by_type, created_by_name, completed_by_type, completed_by_name,
+                  created_by_type, created_by_name, assigned_to,
+                  completed_by_type, completed_by_name,
                   created_at, started_at, completed_at
            from tasks order by coalesce(completed_at, started_at, created_at), id`),
         q(`select id, agent, action, rationale, sim_time, created_at

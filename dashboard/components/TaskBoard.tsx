@@ -99,6 +99,72 @@ function took(created: string, completed: string): string {
 
 type Flash = "new" | "changed";
 
+// Owner of a task: the agent it's assigned to (e.g. CEO tasking Trading) if set,
+// otherwise whoever created it. Shows "via <creator>" when the two differ.
+function renderRow(t: Task, flash: Record<number, Flash>) {
+  const status = uiStatus(t.status);
+  const f = flash[t.id];
+  const owner = t.assigned_to ?? t.created_by_name;
+  const ownerColor = t.assigned_to ? actorColor("agent") : actorColor(t.created_by_type);
+  const via =
+    t.assigned_to && t.created_by_name && t.assigned_to !== t.created_by_name
+      ? t.created_by_name
+      : null;
+  return (
+    <div key={t.id} className={`task-row ${status}${f ? ` ${f}` : ""}`}>
+      <span className={`st st-${status}`}>
+        <StatusIcon status={status} />
+      </span>
+      <div className="task-main">
+        <div className="task-title">{t.title}</div>
+        <div className="task-sub">
+          {owner && (
+            <span
+              className="chip"
+              style={{ color: ownerColor, borderColor: ownerColor }}
+            >
+              {owner}
+            </span>
+          )}
+          {via && <span>via {via}</span>}
+          <span>created {ago(t.created_at)}</span>
+          {status === "done" && t.completed_at && (
+            <span>
+              · done {ago(t.completed_at)} · took {took(t.created_at, t.completed_at)}
+              {t.completed_by_name && t.completed_by_name !== owner
+                ? ` by ${t.completed_by_name}`
+                : ""}
+            </span>
+          )}
+          {status === "doing" && t.started_at && (
+            <span>· started {ago(t.started_at)}</span>
+          )}
+        </div>
+      </div>
+      <span className={`tag ${status}`}>{STATUS_LABEL[status]}</span>
+    </div>
+  );
+}
+
+// Group the board by phase: live work on top, prep work at the bottom. Row order
+// within each phase is preserved (the feed arrives newest-activity-first).
+const PHASE_ORDER = ["live", "prep"];
+
+function renderGroups(tasks: Task[], flash: Record<number, Flash>) {
+  const phaseOf = (t: Task) => (t.phase === "prep" ? "prep" : "live");
+  return PHASE_ORDER.map((phase) => ({
+    phase,
+    rows: tasks.filter((t) => phaseOf(t) === phase),
+  }))
+    .filter((g) => g.rows.length > 0)
+    .map((g) => (
+      <div key={g.phase} className="tb-group">
+        <div className="tb-phase">{g.phase} phase</div>
+        {g.rows.map((t) => renderRow(t, flash))}
+      </div>
+    ));
+}
+
 export default function TaskBoard() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [err, setErr] = useState<string | null>(null);
@@ -204,44 +270,7 @@ export default function TaskBoard() {
       )}
 
       <div className="taskboard">
-        {tasks.map((t) => {
-          const status = uiStatus(t.status);
-          const f = flash[t.id];
-          const creatorColor = actorColor(t.created_by_type);
-          return (
-            <div key={t.id} className={`task-row ${status}${f ? ` ${f}` : ""}`}>
-              <span className={`st st-${status}`}>
-                <StatusIcon status={status} />
-              </span>
-              <div className="task-main">
-                <div className="task-title">{t.title}</div>
-                <div className="task-sub">
-                  {t.created_by_name && (
-                    <span
-                      className="chip"
-                      style={{ color: creatorColor, borderColor: creatorColor }}
-                    >
-                      {t.created_by_name}
-                    </span>
-                  )}
-                  <span>created {ago(t.created_at)}</span>
-                  {status === "done" && t.completed_at && (
-                    <span>
-                      · done {ago(t.completed_at)} · took {took(t.created_at, t.completed_at)}
-                      {t.completed_by_name && t.completed_by_name !== t.created_by_name
-                        ? ` by ${t.completed_by_name}`
-                        : ""}
-                    </span>
-                  )}
-                  {status === "doing" && t.started_at && (
-                    <span>· started {ago(t.started_at)}</span>
-                  )}
-                </div>
-              </div>
-              <span className={`tag ${status}`}>{STATUS_LABEL[status]}</span>
-            </div>
-          );
-        })}
+        {renderGroups(tasks, flash)}
       </div>
     </div>
   );

@@ -32,13 +32,18 @@ class Ctx:
 
 
 # --- CEO / shared --------------------------------------------------------------
-def create_task(ctx: Ctx, title: str, category: str = "ops", priority: int = 3) -> dict:
+def create_task(ctx: Ctx, title: str, category: str = "ops", priority: int = 3,
+                assigned_to: str | None = None) -> dict:
+    """File a task. When one agent directs another (e.g. CEO tasking Trading),
+    pass assigned_to as that agent's name so the board shows the owner, not just
+    the author."""
+    owner = actor_name(assigned_to) if assigned_to else None
     row = db.fetchone(
         ctx.conn,
         """insert into tasks (title, phase, category, status, priority,
-               created_by_type, created_by_name)
-           values (%s,'live',%s,'todo',%s,'agent',%s) returning id""",
-        (title, category, priority, actor_name(ctx.agent)),
+               created_by_type, created_by_name, assigned_to)
+           values (%s,'live',%s,'todo',%s,'agent',%s,%s) returning id""",
+        (title, category, priority, actor_name(ctx.agent), owner),
     )
     return {"note": f"created task #{row['id']}: {title}", "task_id": row["id"]}
 

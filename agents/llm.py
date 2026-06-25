@@ -40,7 +40,8 @@ def _headers() -> dict:
 
 # Compact tool catalogue the model may call, with the exact arg names per tool.
 TOOL_ARGS = {
-    "create_task": {"title": "str", "category": "str", "priority": "int 1-5"},
+    "create_task": {"title": "str", "category": "str", "priority": "int 1-5",
+                    "assigned_to": "str (agent to own it, e.g. trading)"},
     "update_task": {"task_id": "int", "status": "todo|doing|done|cancelled", "result": "str"},
     "request_approval": {"action_type": "spend|pricing_change|external_send|licensing",
                          "summary": "str", "payload": "object"},
