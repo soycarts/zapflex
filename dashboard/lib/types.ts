@@ -79,6 +79,13 @@ export type Approval = {
   created_at: string;
 };
 
+export type Sim = {
+  sim_now: string | null;
+  sim_start: string | null;
+  sim_days: number;
+  customer_savings: string;
+} | null;
+
 export type Snapshot = {
   leaderboard: LeaderRow[];
   pnl: Pnl;
@@ -88,6 +95,7 @@ export type Snapshot = {
   tasks: Task[];
   activity: Decision[];
   approvals: Approval[];
+  sim: Sim;
   ts: number;
   error?: string;
 };

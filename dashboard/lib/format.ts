@@ -30,6 +30,20 @@ export function duration(secs: string | number | null | undefined): string {
   return `${Math.floor(s / 3600)}h`;
 }
 
+// Sim clock dates are date-only in intent; format in UTC so the calendar day
+// never shifts under the viewer's local timezone.
+export function simDate(iso: string | null | undefined): string {
+  if (!iso) return "—";
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return "—";
+  return d.toLocaleDateString("en-GB", {
+    timeZone: "UTC",
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+}
+
 // Actor → colour for the prep-to-live timeline.
 export function actorColor(type: string | null | undefined): string {
   switch (type) {

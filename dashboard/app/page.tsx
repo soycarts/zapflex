@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Snapshot } from "@/lib/types";
+import { simDate } from "@/lib/format";
 import StatCards from "@/components/StatCards";
 import Leaderboard from "@/components/Leaderboard";
 import TaskBoard from "@/components/TaskBoard";
@@ -46,6 +47,12 @@ export default function Page() {
           zapflex<span className="dot">.</span>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+          {snap?.sim?.sim_now && (
+            <div className="simclock" title="Current simulated date">
+              <span className="simclock-label">sim date</span>
+              <span className="simclock-date">{simDate(snap.sim.sim_now)}</span>
+            </div>
+          )}
           <Link href="/judge" className="navlink">judge sandbox →</Link>
           <div className="live">
             <span className="pulse" />
@@ -60,7 +67,7 @@ export default function Page() {
 
       {snap && (
         <>
-          <StatCards pnl={snap.pnl} pnlDays={snap.pnlDays} fleet={snap.fleet} support={snap.support} />
+          <StatCards pnl={snap.pnl} pnlDays={snap.pnlDays} fleet={snap.fleet} support={snap.support} sim={snap.sim} />
           <div className="grid">
             <div>
               <Leaderboard rows={snap.leaderboard} />

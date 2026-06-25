@@ -7,7 +7,7 @@ export const revalidate = 0;
 
 export async function GET() {
   try {
-    const [leaderboard, pnlTotal, pnlDays, fleet, support, tasks, activity, approvals] =
+    const [leaderboard, pnlTotal, pnlDays, fleet, support, tasks, activity, approvals, sim] =
       await Promise.all([
         q(`select rank, handle, region, captured_savings, theoretical_optimal,
                   pct_of_optimal, fleet_capacity_kwh
@@ -29,6 +29,14 @@ export async function GET() {
            from decisions_log order by created_at desc limit 40`),
         q(`select id, requested_by, action_type, status, created_at
            from pending_approvals where status = 'pending' order by created_at desc`),
+        // Sim clock: the live engine writes trades for every customer as it advances
+        // one sim day at a time, so trades.sim_time is the freshest source of truth.
+        q(`select max(sim_time) as sim_now,
+                  min(sim_time) as sim_start,
+                  count(distinct date(sim_time)) as sim_days,
+                  (select coalesce(sum(captured_savings), 0) from mart_leaderboard)
+                    as customer_savings
+           from trades`),
       ]);
 
     return NextResponse.json({
@@ -40,6 +48,7 @@ export async function GET() {
       tasks,
       activity,
       approvals,
+      sim: sim[0] ?? null,
       ts: Date.now(),
     });
   } catch (err) {

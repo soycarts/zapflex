@@ -55,6 +55,30 @@ body {
   color: var(--accent);
 }
 
+.simclock {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 4px 12px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--panel);
+}
+
+.simclock-label {
+  color: var(--muted);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.simclock-date {
+  color: var(--accent);
+  font-weight: 700;
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+}
+
 .live {
   display: inline-flex;
   align-items: center;
@@ -80,9 +104,15 @@ body {
 
 .cards {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   gap: 12px;
   margin-bottom: 20px;
+}
+
+.card .value-unit {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
 }
 
 .card {
