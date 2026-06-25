@@ -1,0 +1,15 @@
+version: 2
+
+sources:
+  - name: public
+    description: Operational tables written live by the agents and the sim feed.
+    schema: public
+    tables:
+      - name: customers
+      - name: batteries
+      - name: households
+      - name: trades
+      - name: benchmarks
+      - name: ledger
+      - name: support_tickets
+      - name: connections

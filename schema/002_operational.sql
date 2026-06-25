@@ -164,7 +164,7 @@ create table if not exists benchmarks (
 create index if not exists trades_customer_sim_time_idx    on trades (customer_id, sim_time);
 create index if not exists trades_battery_sim_time_idx     on trades (battery_id, sim_time);
 create index if not exists ledger_customer_sim_time_idx    on ledger (customer_id, sim_time);
-create index if not exists benchmarks_customer_day_idx     on benchmarks (customer_id, sim_day);
+create index if not exists benchmarks_customer_window_idx  on benchmarks (customer_id, window_start);
 create index if not exists decisions_log_agent_created_idx on decisions_log (agent, created_at);
 
 -- Enable realtime on tables the dashboard and agents watch.

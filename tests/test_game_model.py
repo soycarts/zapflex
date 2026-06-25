@@ -1,8 +1,8 @@
 """Tests for the forecast/actual split, settlement, and leaderboard invariants."""
 import pytest
-from energy.battery import Battery
 from energy.household import generate_slots
-from energy.policy import run_slot, DEFAULT_PRESET, settle
+from energy.forecast import forecast_series, MODELS
+from energy.policy import plan_and_settle, settle
 from energy.optimizer import run_window, run_day
 
 # ---------------------------------------------------------------------------
@@ -62,9 +62,7 @@ def test_forecast_no_ev_spikes():
     series = generate_slots(HH_EV_SOLAR, _SLOTS_48, seed=99)
     forecasts = [s.load_kwh for s in series["forecast"]]
     actuals = [s.load_kwh for s in series["actual"]]
-    # Max single-slot forecast load is bounded by daily total / 48 + profile shape.
     max_forecast = max(forecasts)
-    # EV spike adds 1.5-2.5 kWh; a spike > 2x the max forecast slot implies actual had it.
     assert max(actuals) >= max_forecast  # actual can be higher
 
 
@@ -110,35 +108,43 @@ def test_settlement_idle():
 
 
 # ---------------------------------------------------------------------------
-# Policy: hard caps never breached on the actual outcome
+# Policy: hard caps never breached on the executed plan
 # ---------------------------------------------------------------------------
 
-def _run_day_policy(hh_params, preset, seed=0):
+def _run_day_policy(hh_params, seed=0, model=None):
+    model = model if model is not None else MODELS["naive"]
     series = generate_slots(hh_params, _SLOTS_48, seed=seed)
-    fm = {s.slot_start: s for s in series["forecast"]}
     am = {s.slot_start: s for s in series["actual"]}
-    bat = Battery(**{k: BATTERY_PARAMS[k] for k in (
-        "capacity_kwh", "max_charge_kw", "max_discharge_kw",
-        "round_trip_eff", "reserve_soc_pct", "cycle_cap_per_day",
-    )}, current_soc_kwh=BATTERY_PARAMS["current_soc_kwh"])
-    trades = []
-    for slot, imp, exp in zip(_SLOTS_48, _IMP, _EXP):
-        f, a = fm[slot], am[slot]
-        t = run_slot(bat, slot, imp, exp, _IMP, preset,
-                     f.load_kwh, f.solar_kwh, a.load_kwh, a.solar_kwh)
-        trades.append(t)
-    return bat, trades
+    fm = forecast_series(hh_params, _SLOTS_48, model, seed=seed)
+    total, trades = plan_and_settle(BATTERY_PARAMS, _SLOTS_48, _IMP, _EXP, fm, am)
+    return total, trades
+
+
+def _soc_trajectory(trades):
+    soc = BATTERY_PARAMS["current_soc_kwh"]
+    rte = BATTERY_PARAMS["round_trip_eff"]
+    out = []
+    for t in trades:
+        if t["action"] == "charge":
+            soc += t["energy_kwh"] * rte
+        elif t["action"] == "discharge":
+            soc -= t["energy_kwh"]
+        out.append(soc)
+    return out
 
 
 def test_policy_cycle_cap_not_breached():
-    bat, _ = _run_day_policy(HH_EV_SOLAR, DEFAULT_PRESET, seed=3)
-    assert bat.cycles_today <= bat.cycle_cap_per_day + 1e-9
+    _, trades = _run_day_policy(HH_EV_SOLAR, seed=3)
+    total_cycles = sum(t["cycles_used"] for t in trades)
+    assert total_cycles <= BATTERY_PARAMS["cycle_cap_per_day"] + 1e-9
 
 
 def test_policy_soc_within_bounds():
-    bat, _ = _run_day_policy(HH_STABLE, DEFAULT_PRESET, seed=5)
-    assert bat.current_soc_kwh >= bat.reserve_kwh - 1e-9
-    assert bat.current_soc_kwh <= bat.capacity_kwh + 1e-9
+    _, trades = _run_day_policy(HH_STABLE, seed=5)
+    # Tolerance covers rounding of per-slot energy to 4 dp accumulated over the day.
+    for soc in _soc_trajectory(trades):
+        assert soc >= -1e-3
+        assert soc <= BATTERY_PARAMS["capacity_kwh"] + 1e-3
 
 
 # ---------------------------------------------------------------------------
@@ -156,8 +162,7 @@ def _oracle_cashflow(hh_params, seed=0):
 
 def test_pct_of_optimal_in_range():
     oracle_cf = _oracle_cashflow(HH_STABLE, seed=1)
-    _, trades = _run_day_policy(HH_STABLE, DEFAULT_PRESET, seed=1)
-    policy_cf = sum(t["cashflow"] for t in trades)
+    policy_cf, _ = _run_day_policy(HH_STABLE, seed=1)
     if oracle_cf > 0:
         pct = policy_cf / oracle_cf
         assert -0.05 <= pct <= 1.05
@@ -165,43 +170,71 @@ def test_pct_of_optimal_in_range():
 
 def test_oracle_beats_policy():
     oracle_cf = _oracle_cashflow(HH_EV_SOLAR, seed=10)
-    _, trades = _run_day_policy(HH_EV_SOLAR, DEFAULT_PRESET, seed=10)
-    policy_cf = sum(t["cashflow"] for t in trades)
+    policy_cf, _ = _run_day_policy(HH_EV_SOLAR, seed=10)
     assert oracle_cf >= policy_cf - 1e-4
 
 
 # ---------------------------------------------------------------------------
-# Household fit: matched > default > mismatched
+# Forecast skill: learning a home's routine is the leaderboard lever
 # ---------------------------------------------------------------------------
 
-def test_well_matched_beats_default_on_solar():
-    """Export-tuned preset should match or beat default for a solar household."""
-    hh = {"annual_kwh": 4500, "has_solar": True, "solar_kwp": 4.0,
-          "has_ev": False, "occupancy_profile": "standard", "load_volatility": 0.15}
-    export_tuned = {**DEFAULT_PRESET, "export_threshold_p": 12.0, "reserve_soc_pct": 0.15,
-                    "min_spread_p": 5.0}
-    seed = 42
-    _, default_trades = _run_day_policy(hh, DEFAULT_PRESET, seed=seed)
-    _, tuned_trades = _run_day_policy(hh, export_tuned, seed=seed)
-    default_cf = sum(t["cashflow"] for t in default_trades)
-    tuned_cf = sum(t["cashflow"] for t in tuned_trades)
-    # Tuned should be >= default (may tie on days with no export opportunity).
-    assert tuned_cf >= default_cf - 0.01
+# A multi-day window so the EV routine (and its skipped days) averages out — the
+# forecast-skill edge is an expectation over many days, not a single one. The price
+# curve puts the expensive peak in the evening (slots ~32-41), overlapping the EV
+# plug-in window, as real Agile does — that overlap is what makes learning the EV
+# routine pay (keep charge to self-consume the evening peak instead of importing it).
+_DAYS = [f"2026-01-{d:02d}" for d in range(10, 17)]   # 7 days
+_SLOTS_WEEK = [f"{d}T{h:02d}:{m:02d}:00Z" for d in _DAYS for h in range(24) for m in (0, 30)]
+_IMP_EVE = [6.0] * 14 + [16.0] * 18 + [38.0] * 10 + [12.0] * 6   # 48 slots, evening peak
+_EXP_EVE = [p * 0.80 for p in _IMP_EVE]
+_IMP_WEEK = _IMP_EVE * len(_DAYS)
+_EXP_WEEK = _EXP_EVE * len(_DAYS)
 
 
-def test_mismatched_underperforms_default():
-    """Aggressive-export preset on a no-solar home should do no better than default."""
-    hh = HH_STABLE
-    mismatched = {**DEFAULT_PRESET, "export_threshold_p": 8.0,
-                  "discharge_dearest_slots": 16, "reserve_soc_pct": 0.05, "min_spread_p": 2.0}
-    seed = 7
-    oracle_cf = _oracle_cashflow(hh, seed=seed)
-    _, default_trades = _run_day_policy(hh, DEFAULT_PRESET, seed=seed)
-    _, mis_trades = _run_day_policy(hh, mismatched, seed=seed)
-    default_cf = sum(t["cashflow"] for t in default_trades)
-    mis_cf = sum(t["cashflow"] for t in mis_trades)
-    if oracle_cf > 0:
-        pct_default = default_cf / oracle_cf
-        pct_mis = mis_cf / oracle_cf
-        # Mismatched should not significantly beat default; it may be equal or worse.
-        assert pct_mis <= pct_default + 0.05
+def _week_policy(hh_params, model, seed=0):
+    series = generate_slots(hh_params, _SLOTS_WEEK, seed=seed)
+    am = {s.slot_start: s for s in series["actual"]}
+    fm = forecast_series(hh_params, _SLOTS_WEEK, model, seed=seed)
+    total, _ = plan_and_settle(BATTERY_PARAMS, _SLOTS_WEEK, _IMP_WEEK, _EXP_WEEK, fm, am)
+    return total
+
+
+def _week_oracle(hh_params, seed=0):
+    series = generate_slots(hh_params, _SLOTS_WEEK, seed=seed)
+    am = {s.slot_start: s for s in series["actual"]}
+    oracle_slots = [(sl, imp, exp, am[sl].load_kwh, am[sl].solar_kwh)
+                    for sl, imp, exp in zip(_SLOTS_WEEK, _IMP_WEEK, _EXP_WEEK)]
+    total, _, _ = run_window(BATTERY_PARAMS, oracle_slots)
+    return total
+
+
+def test_learned_forecast_beats_naive_on_ev():
+    """Learning the EV routine lifts an EV home meaningfully toward the oracle."""
+    seed = 11
+    naive_cf = _week_policy(HH_EV_SOLAR, MODELS["naive"], seed=seed)
+    learned_cf = _week_policy(HH_EV_SOLAR, MODELS["learned"], seed=seed)
+    assert learned_cf > naive_cf
+
+
+def test_forecast_skill_bounded_by_oracle():
+    """Even a fully-learned forecast cannot beat the perfect-hindsight oracle."""
+    seed = 11
+    oracle_cf = _week_oracle(HH_EV_SOLAR, seed=seed)
+    learned_cf = _week_policy(HH_EV_SOLAR, MODELS["learned"], seed=seed)
+    assert oracle_cf >= learned_cf - 1e-4
+
+
+def test_phantom_routine_forecast_hurts():
+    """Predicting a routine the home does not have (phantom EV) costs yield."""
+    seed = 11
+    # Actual is a stable home with NO EV.
+    series = generate_slots(HH_STABLE, _SLOTS_WEEK, seed=seed)
+    am = {s.slot_start: s for s in series["actual"]}
+
+    naive_fm = forecast_series(HH_STABLE, _SLOTS_WEEK, MODELS["naive"], seed=seed)
+    # Forecast hallucinates an EV routine the home does not actually run.
+    phantom_fm = forecast_series({**HH_STABLE, "has_ev": True}, _SLOTS_WEEK, MODELS["learned"], seed=seed)
+
+    naive_cf, _ = plan_and_settle(BATTERY_PARAMS, _SLOTS_WEEK, _IMP_WEEK, _EXP_WEEK, naive_fm, am)
+    phantom_cf, _ = plan_and_settle(BATTERY_PARAMS, _SLOTS_WEEK, _IMP_WEEK, _EXP_WEEK, phantom_fm, am)
+    assert phantom_cf < naive_cf

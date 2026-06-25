@@ -1,0 +1,8 @@
+---
+alwaysApply: true
+---
+The Supabase `tasks` table is the canonical task tracker, written via `./task.py`. Never track tasks in local .md files.
+- Before starting work: `./task.py start <id>`
+- On completion: `./task.py done <id> --by claude_code --note "<what changed>" --ref "<commit>"`
+- Discovered work: `./task.py add "<title>" --category <area>`
+Run these as actual terminal commands. Do not just describe them.

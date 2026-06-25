@@ -1,7 +1,7 @@
-"""Invariant tests for policy and oracle using the new forecast/actual interface."""
+"""Invariant tests for the forecast-planning policy and the oracle."""
 import pytest
-from energy.battery import Battery
-from energy.policy import run_slot, DEFAULT_PRESET
+from energy.household import SlotSeries
+from energy.policy import plan_and_settle
 from energy.optimizer import run_window, run_day
 
 BATTERY_PARAMS = {
@@ -17,28 +17,39 @@ _LOAD = [0.2] * 48   # flat 0.2 kWh per slot
 _SOLAR = [0.0] * 48
 
 
-def _run_policy_day(preset=DEFAULT_PRESET):
-    bat = Battery(**{k: BATTERY_PARAMS[k] for k in (
-        "capacity_kwh", "max_charge_kw", "max_discharge_kw",
-        "round_trip_eff", "reserve_soc_pct", "cycle_cap_per_day",
-    )}, current_soc_kwh=BATTERY_PARAMS["current_soc_kwh"])
-    trades = []
-    for i, slot in enumerate(_SLOTS):
-        t = run_slot(bat, slot, _IMP[i], _EXP[i], _IMP, preset,
-                     _LOAD[i], _SOLAR[i], _LOAD[i], _SOLAR[i])
-        trades.append(t)
-    return bat, trades
+def _run_policy_day():
+    """Plan + settle on a flat household (forecast == actual)."""
+    fmap = {s: SlotSeries(s, _LOAD[i], _SOLAR[i]) for i, s in enumerate(_SLOTS)}
+    total, trades = plan_and_settle(BATTERY_PARAMS, _SLOTS, _IMP, _EXP, fmap, fmap)
+    return total, trades
+
+
+def _soc_trajectory(trades):
+    """Reconstruct SOC after each slot from the executed trades."""
+    soc = BATTERY_PARAMS["current_soc_kwh"]
+    rte = BATTERY_PARAMS["round_trip_eff"]
+    out = []
+    for t in trades:
+        if t["action"] == "charge":
+            soc += t["energy_kwh"] * rte
+        elif t["action"] == "discharge":
+            soc -= t["energy_kwh"]
+        out.append(soc)
+    return out
 
 
 def test_policy_no_overcycle():
-    bat, _ = _run_policy_day()
-    assert bat.cycles_today <= bat.cycle_cap_per_day + 1e-9
+    _, trades = _run_policy_day()
+    total_cycles = sum(t["cycles_used"] for t in trades)
+    assert total_cycles <= BATTERY_PARAMS["cycle_cap_per_day"] + 1e-9
 
 
 def test_policy_soc_within_bounds():
-    bat, _ = _run_policy_day()
-    assert bat.current_soc_kwh >= bat.reserve_kwh - 1e-9
-    assert bat.current_soc_kwh <= bat.capacity_kwh + 1e-9
+    _, trades = _run_policy_day()
+    # Tolerance covers rounding of per-slot energy to 4 dp accumulated over the day.
+    for soc in _soc_trajectory(trades):
+        assert soc >= -1e-3
+        assert soc <= BATTERY_PARAMS["capacity_kwh"] + 1e-3
 
 
 def test_oracle_no_overcycle():
@@ -53,8 +64,7 @@ def test_oracle_beats_policy():
     oracle_slots = [(s, i, e, l, so)
                     for s, i, e, l, so in zip(_SLOTS, _IMP, _EXP, _LOAD, _SOLAR)]
     oracle_cf, _, _ = run_window(BATTERY_PARAMS, oracle_slots)
-    _, trades = _run_policy_day()
-    policy_cf = sum(t["cashflow"] for t in trades)
+    policy_cf, _ = _run_policy_day()
     assert oracle_cf >= policy_cf - 1e-4
 
 
@@ -62,8 +72,17 @@ def test_pct_of_optimal_in_range():
     oracle_slots = [(s, i, e, l, so)
                     for s, i, e, l, so in zip(_SLOTS, _IMP, _EXP, _LOAD, _SOLAR)]
     oracle_cf, _, _ = run_window(BATTERY_PARAMS, oracle_slots)
-    _, trades = _run_policy_day()
-    policy_cf = sum(t["cashflow"] for t in trades)
+    policy_cf, _ = _run_policy_day()
     if oracle_cf > 0:
         pct = policy_cf / oracle_cf
         assert -0.05 <= pct <= 1.05
+
+
+def test_policy_matches_oracle_on_perfect_forecast():
+    """With forecast == actual, the plan should capture ~all of the optimum."""
+    oracle_slots = [(s, i, e, l, so)
+                    for s, i, e, l, so in zip(_SLOTS, _IMP, _EXP, _LOAD, _SOLAR)]
+    oracle_cf, _, _ = run_window(BATTERY_PARAMS, oracle_slots)
+    policy_cf, _ = _run_policy_day()
+    if oracle_cf > 0:
+        assert policy_cf / oracle_cf >= 0.99

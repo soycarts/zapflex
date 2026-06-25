@@ -78,6 +78,12 @@ docs/_build/
 .pybuilder/
 target/
 
+# dbt artifacts
+dbt/target/
+dbt/logs/
+dbt/dbt_packages/
+dbt/.user.yml
+
 # Jupyter Notebook
 .ipynb_checkpoints
 
@@ -219,3 +225,12 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# dashboard (Next.js)
+dashboard/node_modules/
+dashboard/.next/
+dashboard/.env*.local
+dashboard/next-env.d.ts
+# re-include dashboard/lib source (the Python `lib/` rule above would ignore it)
+!dashboard/lib/
+!dashboard/lib/**

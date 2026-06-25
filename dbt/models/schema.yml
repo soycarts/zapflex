@@ -1,0 +1,34 @@
+version: 2
+
+models:
+  - name: mart_leaderboard
+    description: One row per active customer; pct_of_optimal is the hardware-normalised skill metric.
+    columns:
+      - name: customer_id
+        tests: [not_null, unique]
+      - name: rank
+        tests: [not_null]
+      - name: captured_savings
+        tests: [not_null]
+
+  - name: mart_company_pnl
+    description: Total + per-sim-day company P&L. net must reconcile to revenue_share + grid_services - costs.
+    columns:
+      - name: net
+        tests: [not_null]
+      - name: customer_count
+        tests: [not_null]
+
+  - name: mart_fleet
+    description: Total + per-region fleet capability.
+    columns:
+      - name: total_capacity_kwh
+        tests: [not_null]
+      - name: customer_count
+        tests: [not_null]
+
+  - name: mart_support
+    description: One-row support snapshot.
+    columns:
+      - name: open_tickets
+        tests: [not_null]

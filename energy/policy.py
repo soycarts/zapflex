@@ -1,124 +1,69 @@
-"""Strategy executor: decides each slot from known prices + forecast load/solar.
+"""Strategy executor: plan a day-ahead dispatch on the FORECAST, settle on ACTUAL.
 
-Prices are fully visible (the 48-slot Agile day-ahead curve, as in production).
-The policy sees a smooth forecast of household load and solar; settlement applies
-the chosen action against the ACTUAL realised values to compute true cashflow.
-Hard caps are enforced on the actual outcome.
+Real home-battery optimisers plan against a price + load forecast and settle on
+what actually happened. We do the same: run the dispatch optimiser
+(energy/optimizer.py) on the household forecast (energy/forecast.py) — capturing the
+full multi-cycle value of the fully-visible Agile price curve — then settle the
+planned actions against the realised household.
+
+Because the price curve is fully visible, the only error left is household forecast
+error. So pct_of_optimal is a clean measure of FORECAST SKILL: the better the agent
+has learned a home's routine (its EV schedule, its solar climatology), the closer
+the plan lands to the perfect-hindsight oracle. The unlearnable noise sets a ceiling
+below 100% — perfect dispatch is impossible from the price curve alone, which is
+exactly what makes the leaderboard a game.
 """
 from __future__ import annotations
-from typing import TYPE_CHECKING
 
-if TYPE_CHECKING:
-    from energy.battery import Battery
-
-DEFAULT_PRESET = {
-    "charge_cheapest_slots": 12,
-    "discharge_dearest_slots": 10,
-    "export_threshold_p": 25.0,
-    "min_spread_p": 8.0,
-    "cost_per_cycle_p": 5.0,
-    "reserve_soc_pct": 0.10,
-}
+from energy.optimizer import _solve
 
 
-def run_slot(
-    battery: "Battery",
-    sim_time: str,
-    import_p: float,
-    export_p: float,
-    day_import_prices: list[float],   # all 48 prices for the current sim day
-    preset: dict,
-    forecast_load_kwh: float = 0.0,   # smooth forecast for this slot
-    forecast_solar_kwh: float = 0.0,
-    actual_load_kwh: float = 0.0,     # realised value for settlement
-    actual_solar_kwh: float = 0.0,
-) -> dict:
-    """Decide and execute action for one half-hour slot.
+def plan_and_settle(
+    battery_params: dict,
+    slots: list[str],
+    import_prices: list[float],
+    export_prices: list[float],
+    forecast_map: dict,
+    actual_map: dict,
+    slot_hours: float = 0.5,
+) -> tuple[float, list[dict]]:
+    """Plan dispatch on the forecast, then settle each action on the actual household.
 
-    Decision uses known prices and the forecast household.
-    Cashflow is settled against actual load and solar.
-    Returns a trade record dict ready for the trades table.
+    forecast_map / actual_map: {slot_start: obj} with .load_kwh and .solar_kwh.
+    Prices are known (the same for planning and settlement). The cycle cap is
+    applied per calendar day and SOC carries across days inside the optimiser.
+
+    Returns (total_settled_cashflow_gbp, list of per-slot trade dicts).
     """
-    p = {**DEFAULT_PRESET, **preset}
+    forecast_slots = [
+        (s, imp, exp, forecast_map[s].load_kwh, forecast_map[s].solar_kwh)
+        for s, imp, exp in zip(slots, import_prices, export_prices)
+    ]
+    soc0 = battery_params.get("current_soc_kwh", 0.0)
+    _, plan = _solve(battery_params, forecast_slots, soc0, slot_hours=slot_hours)
 
-    # Rank current slot within today's full 48-price curve.
-    sorted_asc = sorted(day_import_prices)
-    sorted_desc = sorted(day_import_prices, reverse=True)
+    trades: list[dict] = []
+    total = 0.0
+    for t, imp, exp in zip(plan, import_prices, export_prices):
+        a = actual_map[t["sim_time"]]
+        cashflow, settled_price = settle(
+            action=t["action"],
+            energy_kwh=t["energy_kwh"],
+            import_p=imp,
+            export_p=exp,
+            actual_net_load_kwh=a.load_kwh - a.solar_kwh,
+        )
+        total += cashflow
+        trades.append({
+            "sim_time": t["sim_time"],
+            "action": t["action"],
+            "energy_kwh": t["energy_kwh"],
+            "price_p_per_kwh": round(settled_price, 4),
+            "cashflow": round(cashflow, 6),
+            "cycles_used": t["cycles_used"],
+        })
 
-    n_cheap = min(int(p["charge_cheapest_slots"]), len(sorted_asc))
-    n_dear = min(int(p["discharge_dearest_slots"]), len(sorted_desc))
-    charge_threshold = sorted_asc[n_cheap - 1] if n_cheap > 0 else float("inf")
-    discharge_threshold = sorted_desc[n_dear - 1] if n_dear > 0 else float("-inf")
-
-    # Combined spread threshold: min_spread_p + cost_per_cycle_p
-    spread_min = float(p["min_spread_p"]) + float(p["cost_per_cycle_p"])
-
-    # Forecast net load: positive = net consumer, negative = net exporter.
-    forecast_net = forecast_load_kwh - forecast_solar_kwh
-
-    # Effective discharge value given the forecast household state.
-    # If we expect to be a net consumer, discharge saves import; otherwise adds export.
-    if forecast_net > 0:
-        forecast_discharge_price = import_p
-    else:
-        forecast_discharge_price = export_p
-
-    action = "idle"
-    energy_kwh = 0.0
-    planned_price = import_p
-
-    if import_p <= charge_threshold and battery.cycles_today < battery.cycle_cap_per_day:
-        # Cheap slot: charge if the spread vs expected discharge is worth cycling.
-        if (discharge_threshold - import_p) >= spread_min:
-            grid_drawn = battery.charge()
-            if grid_drawn > 0:
-                action = "charge"
-                energy_kwh = grid_drawn
-                planned_price = import_p
-
-    elif (
-        export_p >= float(p["export_threshold_p"])
-        and (export_p - charge_threshold) >= spread_min
-        and battery.current_soc_kwh > battery.reserve_kwh
-    ):
-        # Export opportunity: price above threshold with enough spread.
-        delivered = battery.discharge()
-        if delivered > 0:
-            action = "discharge"
-            energy_kwh = delivered
-            planned_price = export_p
-
-    elif (
-        import_p >= discharge_threshold
-        and (import_p - charge_threshold) >= spread_min
-        and battery.current_soc_kwh > battery.reserve_kwh
-    ):
-        # Expensive import slot: discharge to avoid grid draw.
-        delivered = battery.discharge()
-        if delivered > 0:
-            action = "discharge"
-            energy_kwh = delivered
-            planned_price = import_p
-
-    # Settlement: compute true cashflow from the actual household.
-    cashflow, settled_price = settle(
-        action=action,
-        energy_kwh=energy_kwh,
-        import_p=import_p,
-        export_p=export_p,
-        actual_net_load_kwh=actual_load_kwh - actual_solar_kwh,
-    )
-
-    cycles_used = energy_kwh / battery.capacity_kwh if action != "idle" else 0.0
-
-    return {
-        "sim_time": sim_time,
-        "action": action,
-        "energy_kwh": round(energy_kwh, 4),
-        "price_p_per_kwh": round(settled_price, 4),
-        "cashflow": round(cashflow, 6),
-        "cycles_used": round(cycles_used, 4),
-    }
+    return round(total, 6), trades
 
 
 def settle(
@@ -128,7 +73,7 @@ def settle(
     export_p: float,
     actual_net_load_kwh: float,
 ) -> tuple[float, float]:
-    """Apply the planned battery action against actual load/solar.
+    """Apply a planned battery action against actual load/solar.
 
     Returns (cashflow_gbp, effective_price_p_per_kwh).
     Discharge cashflow depends on whether actual household is a net consumer

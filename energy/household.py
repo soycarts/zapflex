@@ -1,17 +1,50 @@
-"""Per-slot household load and solar: a smooth forecast and a noisy actual.
+"""Per-slot household load and solar: the ground-truth ACTUAL series.
 
-The policy sees only the forecast. Settlement and the oracle use the actual.
-The gap between them is where the strategy levers earn their keep.
+This module generates what the home actually does. The naive forecast it also
+returns (profile + clear-sky solar, no EV) is the knowledge-0 baseline; richer,
+"learned" forecasts live in energy/forecast.py. Settlement and the oracle use the
+actual; the policy plans on whichever forecast the agent has built. The gap between
+them is forecast error — and how much of it the agent can close is the game.
 
-Actual series includes:
-  - Multiplicative Gaussian noise on load, scaled by load_volatility.
-  - EV charging spikes (has_ev=True): ~20% of days, 3-6 slots at 1.5-2.5 kWh each.
-  - Solar weather variation (has_solar=True): ~25% of days heavily overcast.
+The actual splits into a LEARNABLE routine and UNLEARNABLE noise, so forecast
+skill (energy/forecast.py) has something real to capture but can never hit 100%:
+  - Load: profile × annual_kwh × multiplicative Gaussian noise (unlearnable).
+  - EV (has_ev): a consistent daily evening charging routine — same window and
+    baseline kWh every day (learnable) — plus magnitude noise, ~15% skipped days,
+    and rare daytime top-ups (unlearnable).
+  - Solar (has_solar): clear-sky × a daily weather factor scattered around a fixed
+    climatological mean (the mean is learnable; the daily scatter is not).
 """
 import math
 import random
 import datetime
+import zlib
 from typing import NamedTuple
+
+
+def stable_seed(name: str) -> int:
+    """Deterministic per-customer seed (process-independent, unlike hash()).
+
+    The household routine must be reproducible across runs so the leaderboard is
+    stable and an agent can learn a fixed pattern."""
+    return zlib.crc32(name.encode()) & 0xFFFF
+
+# Climatological mean of the daily solar weather factor (learnable by a seasonal
+# forecast); the daily scatter around it is the unlearnable part.
+SOLAR_CLIMATOLOGY = 0.78
+# Fraction of days the EV actually follows its routine (the rest are skipped).
+EV_ROUTINE_PROB = 0.85
+
+
+def ev_routine(seed: int) -> tuple[int, int, float]:
+    """The household's consistent EV charging routine (the learnable pattern):
+    (start_slot, length_slots, base_kwh_per_slot). Deterministic per household so
+    energy/forecast.py can learn the same routine the actual is generated from."""
+    r = random.Random(f"ev-{seed}")
+    start = r.randint(36, 40)        # consistent plug-in, 18:00–20:00
+    length = r.randint(4, 6)         # charges for 2–3 hours
+    base = r.uniform(2.0, 3.0)       # baseline kWh per slot
+    return start, length, base
 
 
 # Half-hour slot index (0 = midnight, 47 = 23:30) → fraction of daily load.
@@ -86,26 +119,32 @@ def generate_slots(
     volatility = float(params.get("load_volatility", 0.15))
 
     rng = random.Random(seed)
+    ev_start, ev_len, ev_base = ev_routine(seed) if has_ev else (0, 0, 0.0)
 
-    # Build per-day actual modifiers (EV spike slots, solar weather factor).
+    # Build per-day actual modifiers: the EV charge for the day and the solar weather.
     days = sorted({s[:10] for s in slots})
     day_mods: dict[str, dict] = {}
     for day in days:
-        ev_slots: set[int] = set()
-        if has_ev and rng.random() < 0.20:
-            start = rng.randint(34, 42)           # 17:00–21:00
-            length = rng.randint(3, 6)
-            ev_slots = set(range(start, start + length))
+        ev_load: dict[int, float] = {}
+        if has_ev:
+            # The routine: same window every day, magnitude scattered around base.
+            if rng.random() < EV_ROUTINE_PROB:
+                mag = max(0.0, ev_base * (1.0 + rng.gauss(0.0, 0.30)))
+                for k in range(ev_len):
+                    ev_load[(ev_start + k) % 48] = mag
+            # Unlearnable: a rare daytime top-up charge.
+            if rng.random() < 0.15:
+                ds = rng.randint(20, 28)
+                for k in range(rng.randint(2, 4)):
+                    si = (ds + k) % 48
+                    ev_load[si] = ev_load.get(si, 0.0) + rng.uniform(2.0, 4.0)
 
+        # Daily solar weather factor scattered around the climatological mean.
         solar_factor = 1.0
         if has_solar:
-            r = rng.random()
-            if r < 0.25:
-                solar_factor = rng.uniform(0.05, 0.25)   # overcast
-            else:
-                solar_factor = rng.uniform(0.85, 1.10)   # normal variation
+            solar_factor = max(0.05, rng.gauss(SOLAR_CLIMATOLOGY, 0.30))
 
-        day_mods[day] = {"ev_slots": ev_slots, "solar_factor": solar_factor}
+        day_mods[day] = {"ev_load": ev_load, "solar_factor": solar_factor}
 
     forecast: list[SlotSeries] = []
     actual: list[SlotSeries] = []
@@ -119,14 +158,12 @@ def generate_slots(
         f_load = _forecast_load(annual_kwh, si)
         f_solar = _forecast_solar(solar_kwp, si, doy) if has_solar else 0.0
 
-        # Actual: multiplicative noise on load.
+        # Actual: multiplicative noise on load, plus the day's EV charge.
         noise = rng.gauss(0.0, volatility)
-        a_load = max(0.0, f_load * (1.0 + noise))
-        if si in mods["ev_slots"]:
-            a_load += rng.uniform(1.5, 2.5)          # EV charging spike kWh
-
+        a_load = max(0.0, f_load * (1.0 + noise)) + mods["ev_load"].get(si, 0.0)
         a_solar = f_solar * mods["solar_factor"] if has_solar else 0.0
 
+        # Naive (knowledge-0) forecast: profile + clear-sky solar, no EV.
         forecast.append(SlotSeries(slot, round(f_load, 4), round(f_solar, 4)))
         actual.append(SlotSeries(slot, round(a_load, 4), round(a_solar, 4)))
 

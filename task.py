@@ -1,15 +1,23 @@
 #!/usr/bin/env python3
 """task.py - shared task tracker over the Supabase tasks table."""
 import os, sys, argparse, datetime
+from dotenv import load_dotenv
 from supabase import create_client
+
+load_dotenv()
 
 sb = create_client(os.environ["SUPABASE_URL"], os.environ["SUPABASE_SERVICE_KEY"])
 now = lambda: datetime.datetime.now(datetime.timezone.utc).isoformat()
 
+# Actor types tracked on the tasks board (drives the dashboard timeline colours):
+#   human (carter), claude_code, cursor (Cursor / Opus 4.8), agent (the run-time swarm).
+def actor_type(by):
+    return "human" if by in ("carter", "human") else by
+
 def add(a):
     t = sb.table("tasks").insert({
         "title": a.title, "phase": a.phase, "category": a.category,
-        "created_by_type": "human" if a.by in ("carter", "human") else a.by,
+        "created_by_type": actor_type(a.by),
         "created_by_name": a.by, "assigned_to": a.to, "status": "todo",
     }).execute()
     print("created", t.data[0]["id"], "-", a.title)
@@ -28,7 +36,7 @@ def start(a):
 
 def done(a):
     upd = {"status": "done", "completed_at": now(),
-           "completed_by_type": a.by if a.by in ("human", "claude_code", "agent") else "human",
+           "completed_by_type": actor_type(a.by),
            "completed_by_name": a.by}
     if a.note: upd["result"] = a.note
     if a.ref:  upd["source_ref"] = a.ref

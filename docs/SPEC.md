@@ -166,7 +166,7 @@ create table batteries (
   reserve_soc_pct     numeric not null default 0.10,
   cycle_cap_per_day   numeric not null default 1.5,   -- hard over-cycle guard
   current_soc_kwh     numeric not null default 0,
-  strategy_preset     jsonb,                          -- tunable strategy params (see section 10)
+  strategy_preset     jsonb,                          -- household forecast model + knowledge knobs (see section 10)
   created_at          timestamptz not null default now()
 );
 
@@ -344,7 +344,7 @@ Five agents. Each is a soul file in `agents/souls/`, scoped blank-slate to its o
 | Support / Community | event on new ticket or connection error + sweep ~2 min | support_tickets, customers, connections, marts | support_tickets, connections, community_posts, decisions_log | external send, refunds or goodwill credit |
 | Finance / Compliance | ~2 min real | trades, ledger, marts | ledger, decisions_log, kill_switch (trip only) | none (it enforces, it does not spend) |
 
-The strategy executor in `energy/policy.py` runs each customer's `strategy_preset` per slot and enforces `cycle_cap_per_day` and `reserve_soc_pct` as hard limits. The benchmark oracle in `energy/optimizer.py` computes each household's perfect-hindsight optimum against its actual realised load and solar under the same caps, and writes it to `benchmarks`, which `mart_leaderboard` divides into captured savings. The trading agent supervises strategy and exceptions on its slower cadence. See section 10 for the customer game.
+The strategy executor in `energy/policy.py` plans each customer's day-ahead dispatch on the household forecast built from their `strategy_preset` (forecast model), settles it against the actual, and enforces `cycle_cap_per_day` and `reserve_soc_pct` as hard limits. The benchmark oracle in `energy/optimizer.py` computes each household's perfect-hindsight optimum against its actual realised load and solar under the same caps, and writes it to `benchmarks`, which `mart_leaderboard` divides into captured savings. The trading agent supervises strategy and exceptions on its slower cadence. See section 10 for the customer game.
 
 ---
 
@@ -384,8 +384,8 @@ Starting values, tune as needed. Hold these in env or a small `config` so they a
 - Battery defaults: capacity 5 to 13.5 kWh, max charge and discharge 3 to 5 kW, round-trip efficiency 0.90, reserve SOC 0.10.
 - Region: London (`C`) by default for the seeded fleet.
 - Sim clock: 1 real second per simulated half-hour slot.
-- Default strategy floor: around 80 to 85% of each household's optimal, the gap being forecast-error cost. Tuning well for the household climbs above it.
-- Forecast noise: per-household `load_volatility` sets how hard a household is to predict and is the main knob for the leaderboard spread. Tune it for a clear, sensible ordering.
+- Naive-forecast floor: around 85% of a solar-and-EV household's optimal (higher for predictable homes), the gap being forecast-error cost. Learning the household's routine — a sharper forecast model — climbs above it, toward ~97%.
+- Forecast noise: per-household `load_volatility`, plus the unlearnable part of the EV/solar pattern (skipped days, weather scatter), sets how hard a household is to predict and holds the ceiling below 100%. The learnable routine (EV schedule, solar climatology) is what forecast skill captures. Tune both for a clear, sensible ordering.
 - Models: configurable via OpenRouter. Default to a cost-efficient reasoning model for the high-frequency agents and a stronger model for the CEO. Minimum 64k context.
 
 ---
@@ -395,7 +395,7 @@ Starting values, tune as needed. Hold these in env or a small `config` so they a
 Phase maps to the `tasks.phase` field and to the demo timeline.
 
 ### Prep (pre-built domain core, the two days before)
-Octopus Agile ingestion (import and Agile Outgoing, London) into DuckDB and the Supabase `tariff_prices` table, the battery model, the strategy executor and the benchmark oracle, the household generator, the sim clock, the offline DuckDB backtest (perfect-hindsight optimal versus naive baseline), the Supabase operational schema, the dbt marts and tests. Also pre-build the front-end surfaces against the seeded marts: the dashboard shell, the judge game UI (section 11), and optionally the marketing page, deployed to Vercel. Arrive with all of this running. The domain core and the surfaces are scaffolding the event only wires to live data. The key prep checkpoint is the end-to-end data feed test: ingest real Agile, seed `tariff_prices`, seed two or three customers with different `strategy_preset` values, run the sim clock so the policy writes `trades` and the oracle writes `benchmarks` into Supabase, run dbt, and confirm a real spread in `mart_leaderboard.pct_of_optimal`. You should see the sim rows landing in Supabase live.
+Octopus Agile ingestion (import and Agile Outgoing, London) into DuckDB and the Supabase `tariff_prices` table, the battery model, the strategy executor and the benchmark oracle, the household generator, the sim clock, the offline DuckDB backtest (perfect-hindsight optimal versus naive baseline), the Supabase operational schema, the dbt marts and tests. Also pre-build the front-end surfaces against the seeded marts: the dashboard shell, the judge game UI (section 11), and optionally the marketing page, deployed to Vercel. Arrive with all of this running. The domain core and the surfaces are scaffolding the event only wires to live data. The key prep checkpoint is the end-to-end data feed test: ingest real Agile, seed `tariff_prices`, seed two or three customers with different households and forecast models, run the sim clock so the policy writes `trades` and the oracle writes `benchmarks` into Supabase, run dbt, and confirm a real spread in `mart_leaderboard.pct_of_optimal`. You should see the sim rows landing in Supabase live.
 
 ### Day-of (the 3-hour window)
 The swarm, the harness (`runner.py`, `tools.py`, `gate.py`), the Telegram gate, wiring the pre-built dashboard and judge UI to live data, and the Modal schedules. Build in priority order:
@@ -421,35 +421,39 @@ If the clock bites, three agents with real autonomy and a clean oversight layer 
 ## 10. Customer game and onboarding
 
 ### The game mechanic
-Start from what is known. Octopus publishes all 48 half-hourly Agile prices for the next day at 4pm, so every strategy plans against the full day-ahead price curve, exactly as in production. With prices known, single-battery arbitrage is nearly solved: a competent rule lands within a percent or two of the single-day oracle. The headroom is elsewhere.
+Start from what is known. Octopus publishes all 48 half-hourly Agile prices for the next day at 4pm, so every strategy plans against the full day-ahead price curve, exactly as in production. With prices known, single-battery arbitrage is nearly solved: given the actual household, the optimal plan lands within a percent or two of the oracle. The headroom is elsewhere.
 
 The real headroom is forecasting the household. Consumption and solar tomorrow are not known. They follow routine, weather, and the odd surprise (an EV plugging in, a dull solar day). So the model splits forecast from actual:
-- `household.py` produces an actual realised load and solar series with noise, plus a smooth forecast the policy is allowed to see.
-- `energy/policy.py`, the strategy executor, decides each slot on the forecast and the known prices, under the hard caps. This is the customer's tunable trading agent.
+- `energy/household.py` produces the actual realised load and solar — a learnable routine (EV schedule, solar climatology) plus unlearnable noise. `energy/forecast.py` produces the forecast the policy plans on, sharp or naive depending on how much of the routine the model has learned.
+- `energy/policy.py`, the strategy executor, plans the day-ahead dispatch (a linear program) on the forecast and the known prices, under the hard caps. The customer's tunable trading agent *is* the forecast model it plans against.
 - Settlement runs the chosen action against the actual load and solar to get the true grid import and export, and so the real `trades` cashflow. The battery acts on the plan; the cashflow reflects what happened.
 - `energy/optimizer.py`, the benchmark oracle, optimises against the actual with perfect hindsight, per household, and writes the per-household optimum to `benchmarks`.
 
-The default cannot reach ~100% by construction, because it plans against an imperfect forecast. The gap is honest forecast-error cost, and that is where the levers earn their keep. The leaderboard ranks `pct_of_optimal = captured_savings / optimal` per customer, averaged across the sim days so skill dominates the noise. The hard caps apply in both the policy and the oracle, so nobody tunes their way into over-cycling and the safety envelope holds.
+No forecast can reach ~100% by construction: a household's routine is learnable, but its noise — a skipped EV day, a dull solar afternoon, an unplanned daytime charge — is not. The gap is honest forecast-error cost, and closing it is the game. The leaderboard ranks `pct_of_optimal = captured_savings / optimal` per customer, averaged across the sim days so skill dominates the noise. The hard caps apply in both the policy and the oracle, so nobody trades their way into over-cycling and the safety envelope holds.
 
-### Strategy params (stored in `batteries.strategy_preset`)
+### The lever: the household forecast model (stored in `batteries.strategy_preset`)
+Prices are fully visible, so there is no price-side knob — and risk knobs do not earn their keep. With the full day-ahead curve, the forecast-optimal plan is the certainty-equivalent optimum, so deviating from it with a reserve buffer or an export floor only ever costs yield. Both were built and swept, and both are anti-knobs; they are not exposed. The one lever that moves `pct_of_optimal` is the **household forecast** the policy plans against — specifically how much of the home's routine the model has learned.
+
+`energy/household.py` splits each home into a *learnable* routine (a consistent daily EV charging window and baseline kWh; a solar climatology) and *unlearnable* noise (load noise, occasional skipped EV days, magnitude scatter, rare daytime top-ups). `energy/forecast.py` then builds the forecast at a knowledge level, with two continuous knobs in [0, 1] surfaced as named models:
 ```json
 {
-  "charge_cheapest_slots": 12,
-  "discharge_dearest_slots": 10,
-  "export_threshold_p": 25,
-  "min_spread_p": 8,
-  "cost_per_cycle_p": 5,
-  "reserve_soc_pct": 0.10
+  "forecast_model": "learned",
+  "solar_knowledge": 1.0,   // 0 = optimistic clear-sky, 1 = climatological mean
+  "ev_knowledge": 1.0       // 0 = ignore the EV, 1 = anticipate the charging routine
 }
 ```
-Prices are fully visible (the 48-slot day-ahead curve), so there is no horizon knob. Skill is hedging against forecast error and matching the preset to the household: `reserve_soc_pct` is the buffer held against load running higher than forecast, `export_threshold_p` is how aggressively to bet on uncertain solar, `min_spread_p` and `cost_per_cycle_p` set the degradation appetite. The right values depend on the household. A solar-and-EV home has volatile net load and large headroom to tune; a stable no-solar home is predictable and sits near the top whatever it does.
+- `naive` (0, 0): profile load and clear-sky solar, no EV. The knowledge-0 floor.
+- `seasonal` (1, 0): de-rates solar to its climatological mean. Helps solar homes.
+- `learned` (1, 1): also anticipates the EV charging routine. The ceiling for an EV home.
+
+Skill is matching the model to the household, and it is two-sided: learning a routine the home has lifts it toward the oracle, but predicting a routine it does not have — a phantom EV — plans for load that never arrives and loses yield. The right model depends on the household. A stable no-solar home sits near the top on `naive` whatever it does; a solar-and-EV home has large headroom that only `learned` reaches. 30-day backtest: stable ~97% on `naive`, solar ~96% on `seasonal`, solar-and-EV ~86% on `naive` rising to ~97% on `learned`. The unlearnable noise holds the ceiling below 100%.
 
 ### The real-customer flow (simulated here)
 In production a customer buys a battery from a provider, signs up to zapflex, and authorises us to their battery, which means an OAuth connection to the provider cloud API or a local route through Home Assistant. They connect their Octopus account and region, then pick or tune a strategy. From then on zapflex reads their telemetry (state of charge, consumption, solar) and sends dispatch commands. The per-provider connector layer is the unglamorous slog that becomes a moat once built, and it is out of scope for the hackathon. We simulate it with the `connections`, `households`, and `strategy_versions` tables and `energy/household.py`, which generates per-slot load and optional solar from the household params so we store parameters rather than bulky time series.
 
 ### How the sim drives the game during the hands-off window
-- Growth owns onboarding. It creates a customer, a varied household (some with solar or an EV, some stable), a `connections` row (pending, then connected, with a small chance of error), and an initial strategy. Most land on the default, a few tuned well or badly for their household, giving the leaderboard a cluster plus a tail.
-- A subset of customers tune their strategy over time. Growth nudges some `strategy_preset` values, which moves ranks and gives the community something to react to. Each change writes a `strategy_versions` row.
+- Growth owns onboarding. It creates a customer, a varied household (some with solar or an EV, some stable), a `connections` row (pending, then connected, with a small chance of error), and an initial forecast model. Most start on `naive` or `seasonal` — the knowledge floor, routine not yet learned — giving the leaderboard a cluster plus a tail of unlearned homes.
+- The Trading agent learns each home's routine over time and raises its forecast model toward `learned` (for instance once it has watched a customer's EV charge on a steady evening schedule), which moves ranks and gives the community something to react to. Each change writes a `strategy_versions` row. This is the demonstrable autonomy win: a solar-and-EV customer seeded on `seasonal` at ~82% climbs toward ~99% once its routine is learned.
 - Support handles `connections.status = 'error'`, troubleshooting to connected or escalating through the gate.
 - Growth and Support post leaderboard updates and tips into `community_posts` and field "how do I climb" tickets. That is the social surface, and it makes the game visible on the dashboard.
 
@@ -470,9 +474,9 @@ Three web surfaces, all build-time work (the team plus Claude Code), all reading
 The demo centrepiece. Reads the marts and the `tasks` board and shows the actor-coloured prep-to-live timeline, the leaderboard, the running P&L, the agent activity feed from `decisions_log`, and the pending approvals. Realtime or short polling.
 
 ### Judge game UI (priority 2, high value)
-The interactive moment for the judges. A judge sets a `strategy_preset` through a simple UI (sliders and presets) and watches their rank move on the leaderboard. This lands UX clarity and product thinking together, and it runs on the existing backend with no new agent:
-- The judge's inputs write a judge-tagged sandbox `customers` and `batteries` row, flagged so the Growth agent and the sim fleet ignore it.
-- The deterministic policy executor runs that `strategy_preset` against the replayed prices, exactly as for a real customer.
+The interactive moment for the judges. A judge picks a forecast model for a household — `naive`, `seasonal`, `learned`, or the two knowledge sliders underneath — and watches their rank move on the leaderboard as the forecast gets sharper. This lands UX clarity and product thinking together, and it runs on the existing backend with no new agent:
+- The judge's inputs write a judge-tagged sandbox `customers` and `batteries` row (the model in `strategy_preset`), flagged so the Growth agent and the sim fleet ignore it.
+- The deterministic policy executor plans the dispatch on that forecast and settles it against the household's actual, exactly as for a real customer.
 - The oracle gives `theoretical_optimal`, dbt computes `pct_of_optimal`, and the judge appears on the leaderboard.
 
 Build it as a second view in the dashboard app, deployed and working before the event so judges use it live.
