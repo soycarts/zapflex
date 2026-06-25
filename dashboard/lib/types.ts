@@ -8,6 +8,21 @@ export type LeaderRow = {
   fleet_capacity_kwh: string;
 };
 
+export type PnlDay = {
+  sim_day: string;
+  revenue_share: string;
+  grid_services: string;
+  costs: string;
+  net: string;
+  customer_count: number;
+};
+
+export type CostEntry = {
+  sim_day: string | null;
+  amount: string;
+  note: string | null;
+};
+
 export type Pnl = {
   revenue_share: string;
   grid_services: string;
@@ -67,7 +82,7 @@ export type Approval = {
 export type Snapshot = {
   leaderboard: LeaderRow[];
   pnl: Pnl;
-  pnlDays: { sim_day: string; net: string }[];
+  pnlDays: PnlDay[];
   fleet: Fleet;
   support: Support;
   tasks: Task[];

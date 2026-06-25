@@ -60,7 +60,7 @@ export default function Page() {
 
       {snap && (
         <>
-          <StatCards pnl={snap.pnl} fleet={snap.fleet} support={snap.support} />
+          <StatCards pnl={snap.pnl} pnlDays={snap.pnlDays} fleet={snap.fleet} support={snap.support} />
           <div className="grid">
             <div>
               <Leaderboard rows={snap.leaderboard} />

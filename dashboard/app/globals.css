@@ -525,3 +525,86 @@ input[type="range"]:disabled { cursor: not-allowed; }
   .cards { grid-template-columns: repeat(2, 1fr); }
   .grid { grid-template-columns: 1fr; }
 }
+
+/* P&L time series */
+.card-link {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+  transition: border-color 0.15s, background 0.15s;
+}
+.card-link:hover { border-color: var(--muted); background: var(--panel-2); }
+.card-cta {
+  float: right;
+  color: var(--human);
+  font-size: 11px;
+  text-transform: none;
+  letter-spacing: 0;
+}
+.sparkline {
+  display: block;
+  width: 100%;
+  height: 36px;
+  margin-top: 10px;
+}
+
+.page-title {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+
+.pnl-chart { position: relative; padding-right: 4px; }
+.pnl-svg {
+  display: block;
+  width: 100%;
+  height: 320px;
+}
+.pnl-ylabels {
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 320px;
+  width: 100%;
+  pointer-events: none;
+}
+.pnl-ylabels span {
+  position: absolute;
+  right: 2px;
+  transform: translateY(-50%);
+  font-size: 10px;
+  color: var(--muted);
+  background: var(--panel);
+  padding: 0 3px;
+  font-variant-numeric: tabular-nums;
+}
+.pnl-legend {
+  display: flex;
+  gap: 14px;
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 8px;
+}
+.pnl-legend span { display: inline-flex; align-items: center; gap: 5px; }
+.pnl-legend i { width: 9px; height: 9px; border-radius: 2px; display: inline-block; }
+
+.pnl-tip {
+  position: absolute;
+  top: 6px;
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 12px;
+  line-height: 1.5;
+  pointer-events: none;
+  white-space: nowrap;
+  z-index: 2;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+}
+.pnl-tip-day { font-weight: 600; margin-bottom: 2px; }
+.pnl-tip .muted { color: var(--muted); }
+.pos { color: var(--accent); }
+.neg { color: var(--bad); }
+
+.pnl-table .r { text-align: right; font-variant-numeric: tabular-nums; }

@@ -14,7 +14,8 @@ export async function GET() {
            from mart_leaderboard order by rank`),
         q(`select revenue_share, grid_services, costs, net, customer_count
            from mart_company_pnl where sim_day is null`),
-        q(`select sim_day, net from mart_company_pnl where sim_day is not null order by sim_day`),
+        q(`select sim_day, revenue_share, grid_services, costs, net, customer_count
+           from mart_company_pnl where sim_day is not null order by sim_day`),
         q(`select total_capacity_kwh, flexible_kw, available_shift_kwh, customer_count
            from mart_fleet where region is null`),
         q(`select open_tickets, escalated, avg_response_secs, oldest_open_age_secs
