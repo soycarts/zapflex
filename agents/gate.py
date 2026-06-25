@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import urllib.request
 import urllib.parse
 
@@ -74,14 +75,24 @@ def _telegram_send(text: str) -> str | None:
     return None
 
 
-def _notify(text: str) -> str | None:
-    """Push to the highest-priority configured channel; None if dashboard-only."""
-    return _wassist_send(text) or _telegram_send(text)
+def _notify(text: str) -> tuple[str, str] | None:
+    """Push to the highest-priority configured channel; None if dashboard-only.
+
+    Returns (message_id, channel) so the caller can record the external ref and
+    audit which channel actually carried the approval.
+    """
+    msg_id = _wassist_send(text)
+    if msg_id:
+        return msg_id, "wassist"
+    msg_id = _telegram_send(text)
+    if msg_id:
+        return msg_id, "telegram"
+    return None
 
 
 def request_approval(conn, requested_by: str, action_type: str, payload: dict,
-                     summary: str = "") -> dict:
-    """Record a pending approval and notify the human channel. Returns the row id."""
+                     summary: str = "", cycle: int | None = None) -> dict:
+    """Record a pending approval, notify the human channel, and audit it."""
     if action_type not in GATED_ACTIONS:
         action_type = "other"
     row = db.fetchone(
@@ -98,12 +109,24 @@ def request_approval(conn, requested_by: str, action_type: str, payload: dict,
         f"{summary or json.dumps(payload)}\n\n"
         f"Reply `/approve {approval_id}` or `/reject {approval_id}`."
     )
-    msg_id = _notify(text)
+    sent = _notify(text)
+    msg_id, channel = sent if sent else (None, "dashboard")
     if msg_id:
         # telegram_msg_id doubles as the generic external-channel message ref.
         db.execute(conn, "update pending_approvals set telegram_msg_id = %s where id = %s",
                    (msg_id, approval_id))
-    return {"approval_id": approval_id, "notified": bool(msg_id)}
+    db.log_decision(
+        conn,
+        agent=requested_by,
+        action="request_approval",
+        rationale=summary or json.dumps(payload),
+        cycle=cycle,
+        approvals_requested={
+            "approval_id": approval_id, "action_type": action_type,
+            "channel": channel, "notified": bool(msg_id),
+        },
+    )
+    return {"approval_id": approval_id, "notified": bool(msg_id), "channel": channel}
 
 
 def approval_status(conn, approval_id: int) -> str:
@@ -111,8 +134,8 @@ def approval_status(conn, approval_id: int) -> str:
     return row["status"] if row else "pending"
 
 
-def resolve(conn, approval_id: int, decision: str, by: str = "human") -> None:
-    """Used by the Telegram webhook (or a manual override) to resolve an approval."""
+def resolve(conn, approval_id: int, decision: str, by: str = "human") -> str:
+    """Resolve an approval from any inbound channel (Wassist/Telegram webhook or CLI)."""
     decision = "approved" if decision == "approve" else "rejected" if decision == "reject" else decision
     db.execute(
         conn,
@@ -120,3 +143,45 @@ def resolve(conn, approval_id: int, decision: str, by: str = "human") -> None:
            where id = %s""",
         (decision, by, approval_id),
     )
+    db.log_decision(
+        conn,
+        agent=by,
+        action=f"resolve_approval:{decision}",
+        rationale=f"approval #{approval_id} -> {decision}",
+        approvals_requested={"approval_id": approval_id, "decision": decision},
+    )
+    return decision
+
+
+_CMD_RE = re.compile(r"^\s*/?(approve|reject|yes|no)\b\s*#?\s*(\d+)?", re.IGNORECASE)
+_DECISION_WORD = {"approve": "approve", "yes": "approve", "reject": "reject", "no": "reject"}
+
+
+def parse_command(text: str) -> tuple[str, int] | None:
+    """Parse an inbound reply into (decision, approval_id), or None if not a command.
+
+    Accepts `/approve 5`, `approve #5`, `reject 5`, and the bare `yes 5` / `no 5`.
+    """
+    if not text:
+        return None
+    m = _CMD_RE.match(text)
+    if not m or m.group(2) is None:
+        return None
+    return _DECISION_WORD[m.group(1).lower()], int(m.group(2))
+
+
+def handle_inbound(conn, text: str, by: str = "human") -> str | None:
+    """Resolve an approval from a webhook message; returns a reply string or None.
+
+    The Wassist/Telegram inbound webhook hands the raw message text here. Unknown
+    or non-command messages return None so the webhook can stay quiet.
+    """
+    parsed = parse_command(text)
+    if not parsed:
+        return None
+    decision, approval_id = parsed
+    if approval_status(conn, approval_id) != "pending":
+        return f"approval #{approval_id} is already resolved."
+    resolve(conn, approval_id, decision, by=by)
+    verb = "approved" if decision == "approve" else "rejected"
+    return f"approval #{approval_id} {verb}. The swarm will proceed accordingly."
