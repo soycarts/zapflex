@@ -78,6 +78,18 @@ def build_context(conn, fleet: Fleet, agent: str) -> str:
     pnl = db.fetchone(conn, "select revenue_share, grid_services, costs, net, customer_count from mart_company_pnl where sim_day is null")
     sup = db.fetchone(conn, "select open_tickets, escalated from mart_support limit 1")
     recent = db.fetchall(conn, "select agent, action from decisions_log order by created_at desc limit 8")
+    # The open tasks this agent owns (assigned to it) or could pick up (unassigned),
+    # so it can mark its work done via update_task and avoid re-filing duplicates.
+    my_tasks = db.fetchall(
+        conn,
+        """select id, title, status, category, priority, assigned_to, created_by_name
+           from tasks
+           where status in ('todo','doing')
+             and (assigned_to = %s or assigned_to is null)
+           order by case status when 'doing' then 0 else 1 end, priority, id
+           limit 12""",
+        (f"agent-{agent}",),
+    )
     homes = [{"handle": c.handle, "model": c.model,
               "has_solar": c.household["has_solar"], "has_ev": c.household["has_ev"]}
              for c in fleet.customers]
@@ -88,6 +100,7 @@ def build_context(conn, fleet: Fleet, agent: str) -> str:
         f"pnl={json.dumps(pnl, default=str)}\n"
         f"support={json.dumps(sup, default=str)}\n"
         f"fleet_homes={json.dumps(homes)}\n"
+        f"open_tasks={json.dumps(my_tasks, default=str)}\n"
         f"recent_actions={json.dumps(recent, default=str)}\n"
     )
 

@@ -9,6 +9,7 @@ import Leaderboard from "@/components/Leaderboard";
 import TaskBoard from "@/components/TaskBoard";
 import ActivityFeed from "@/components/ActivityFeed";
 import Approvals from "@/components/Approvals";
+import CeoReport from "@/components/CeoReport";
 
 const POLL_MS = 4000;
 
@@ -78,6 +79,7 @@ export default function Page() {
               <Approvals items={snap.approvals} />
             </div>
           </div>
+          <CeoReport />
         </>
       )}
     </div>

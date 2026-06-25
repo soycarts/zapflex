@@ -91,9 +91,22 @@ def trading(ctx: Ctx) -> dict:
     candidates.sort(key=lambda x: pcts.get(x[0], 1.0))
     handle, target = candidates[0]
     r = call(ctx, "set_forecast_model")(ctx, handle=handle, model=target, sim_time=_sim_time(ctx.fleet))
+    results = [r["note"]]
+
+    # Close the loop on the board: complete any open Trading task naming this home,
+    # so the work shows as done rather than piling up as a stale todo.
+    open_task = db.fetchone(ctx.conn,
+        """select id from tasks where status in ('todo','doing')
+               and assigned_to='agent-trading' and title ilike %s
+           order by id limit 1""",
+        (f"%{handle}%",))
+    if open_task:
+        ur = call(ctx, "update_task")(ctx, task_id=open_task["id"], status="done",
+                                      result=f"lifted forecast to '{target}'")
+        results.append(ur["note"])
     return {"action": "learned routine",
             "rationale": f"Watched {handle}'s settled load converge on a routine; lifting its forecast to '{target}' to capture the headroom.",
-            "results": [r["note"]],
+            "results": results,
             "state_summary": {"customer": handle, "model": target}}
 
 

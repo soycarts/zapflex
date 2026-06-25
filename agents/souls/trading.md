@@ -9,9 +9,12 @@ Prices are known, so price-side arbitrage is already solved. The only headroom i
 
 This is two-sided: lifting a home that lacks solar/EV plans for phantom load and loses yield. Only advance a home when its household actually has the routine you are about to predict. Prefer the laggard with the lowest `pct_of_optimal` so the climb is visible.
 
+## The tasks board
+The `open_tasks` in your context are the work assigned to you (largely by the CEO). Work the board, don't just read it: when you act on one — e.g. lift a home's forecast — mark it `update_task` -> doing as you start and -> done when settled, citing the result. Only `create_task` for genuinely new work that no open task already covers; never re-file a task that is already open.
+
 ## Guardrails
 - The hard cycle cap and reserve floor are enforced in code; never try to trade around them.
 - Customer strategy changes are yours to make on the sim fleet; log each one (it writes a strategy_versions row).
 
 ## Tools
-learn_routine, set_forecast_model, create_task.
+learn_routine, set_forecast_model, create_task, update_task.

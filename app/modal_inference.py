@@ -17,9 +17,9 @@ import subprocess
 
 import modal
 
-# Strong open model that fits a single H100 (AWQ 4-bit ~40GB) and is excellent at
-# instruction-following + JSON tool plans. Override by editing here, then redeploy.
-MODEL_NAME = "Qwen/Qwen2.5-72B-Instruct-AWQ"
+# Mid-size open model, unquantized fp16 (~28GB) — fits a single H100 easily and
+# cold-starts fast and reliably. Strong at instruction-following + JSON tool plans.
+MODEL_NAME = "Qwen/Qwen2.5-14B-Instruct"
 SERVED_NAME = "zapflex"          # what agents/llm.py sends as INFERENCE_MODEL
 PORT = 8000
 N_GPU = 1
@@ -29,7 +29,12 @@ MINUTES = 60
 vllm_image = (
     modal.Image.debian_slim(python_version="3.12")
     .pip_install("vllm", "huggingface_hub[hf_transfer]")
-    .env({"HF_HUB_ENABLE_HF_TRANSFER": "1", "VLLM_USE_V1": "1"})
+    .env({
+        "HF_HUB_ENABLE_HF_TRANSFER": "1",
+        # The slim image has no nvcc; disable the JIT-compiled FlashInfer sampler so
+        # vLLM uses native PyTorch sampling (prebuilt kernels, no runtime compile).
+        "VLLM_USE_FLASHINFER_SAMPLER": "0",
+    })
 )
 
 hf_cache = modal.Volume.from_name("zapflex-hf-cache", create_if_missing=True)
@@ -61,6 +66,6 @@ def serve():
         f"--max-model-len 16384 "
         f"--gpu-memory-utilization 0.92 "
         f"--tensor-parallel-size {N_GPU} "
-        f"--quantization awq_marlin"
+        f"--enforce-eager"      # skip CUDA-graph capture (no nvcc, faster cold start)
     )
     subprocess.Popen(cmd, shell=True)

@@ -16,6 +16,30 @@ from agents.sim import Fleet
 GRID_SERVICES_GBP_PER_KW_YEAR = 100.0
 REVENUE_SHARE_PCT = 0.20
 
+VALID_MODELS = {"naive", "seasonal", "learned"}
+
+
+# LLM-provided args arrive as loose JSON; coerce defensively so a stray "high" or a
+# stringified number never crashes a tool (which would force a scripted fallback).
+def _f(v, default: float = 0.0) -> float:
+    try:
+        return float(v)
+    except (TypeError, ValueError):
+        return default
+
+
+def _i(v, default: int = 3) -> int:
+    try:
+        return int(v)
+    except (TypeError, ValueError):
+        return default
+
+
+def _b(v) -> bool:
+    if isinstance(v, bool):
+        return v
+    return str(v).strip().lower() in ("true", "yes", "1", "y")
+
 
 def actor_name(agent: str) -> str:
     """Tasks-board label for a run-time agent: `agent-<type>` (e.g. agent-ceo).
@@ -32,23 +56,53 @@ class Ctx:
 
 
 # --- CEO / shared --------------------------------------------------------------
+# The LLM sends loose status strings; map common synonyms onto the board's vocab.
+_STATUS_ALIASES = {
+    "in_progress": "doing", "inprogress": "doing", "in progress": "doing",
+    "started": "doing", "active": "doing", "wip": "doing",
+    "complete": "done", "completed": "done", "finished": "done", "closed": "done",
+    "cancel": "cancelled", "canceled": "cancelled",
+}
+
+
+def _norm_status(status: str) -> str:
+    s = str(status).strip().lower()
+    return _STATUS_ALIASES.get(s, s)
+
+
 def create_task(ctx: Ctx, title: str, category: str = "ops", priority: int = 3,
                 assigned_to: str | None = None) -> dict:
     """File a task. When one agent directs another (e.g. CEO tasking Trading),
     pass assigned_to as that agent's name so the board shows the owner, not just
-    the author."""
+    the author.
+
+    Deduped: if an open task (todo/doing) with the same title already exists, we
+    return that one instead of piling a near-identical twin on the board. Agents
+    otherwise re-file the same work every cycle; the board's job is to track a
+    piece of work once, through its lifecycle, not to log intent repeatedly."""
+    title = str(title).strip()
+    existing = db.fetchone(
+        ctx.conn,
+        """select id from tasks where lower(title)=lower(%s)
+               and status in ('todo','doing') order by id limit 1""",
+        (title,),
+    )
+    if existing:
+        return {"note": f"task already open #{existing['id']}: {title}",
+                "task_id": existing["id"], "deduped": True}
     owner = actor_name(assigned_to) if assigned_to else None
     row = db.fetchone(
         ctx.conn,
         """insert into tasks (title, phase, category, status, priority,
                created_by_type, created_by_name, assigned_to)
            values (%s,'live',%s,'todo',%s,'agent',%s,%s) returning id""",
-        (title, category, priority, actor_name(ctx.agent), owner),
+        (title, category, _i(priority, 3), actor_name(ctx.agent), owner),
     )
     return {"note": f"created task #{row['id']}: {title}", "task_id": row["id"]}
 
 
 def update_task(ctx: Ctx, task_id: int, status: str, result: str = "") -> dict:
+    status = _norm_status(status)
     db.execute(
         ctx.conn,
         """update tasks set status=%s, result=coalesce(nullif(%s,''), result),
@@ -78,6 +132,8 @@ def learn_routine(ctx: Ctx, handle: str, sim_time: str | None = None) -> dict:
 
 
 def set_forecast_model(ctx: Ctx, handle: str, model: str, sim_time: str | None = None) -> dict:
+    if model not in VALID_MODELS:
+        return {"note": f"invalid model '{model}' (use naive|seasonal|learned)", "ok": False}
     res = ctx.fleet.relearn(handle, target=model, sim_time=sim_time)
     return {"note": f"set {handle} forecast model -> {model}", **res}
 
@@ -143,19 +199,44 @@ def trip_kill_switch(ctx: Ctx, reason: str) -> dict:
 
 def book_cost(ctx: Ctx, amount_gbp: float, note: str, sim_time: str | None = None) -> dict:
     """Book an approved spend as a negative ledger entry (cost). Gate it before calling."""
+    amt = abs(_f(amount_gbp, 0.0))
     db.execute(
         ctx.conn,
         """insert into ledger (customer_id, sim_time, entry_type, amount, note)
            values (null, coalesce(%s, now()), 'cost', %s, %s)""",
-        (sim_time, -abs(amount_gbp), note),
+        (sim_time, -amt, note),
     )
-    return {"note": f"booked cost -£{abs(amount_gbp):.2f}: {note}"}
+    return {"note": f"booked cost -£{amt:.2f}: {note}"}
 
 
 # --- Growth --------------------------------------------------------------------
 def onboard_customer(ctx: Ctx, profile: dict) -> dict:
+    profile = dict(profile or {})
+    raw_hh = dict(profile.get("household") or {})
+    hh = {
+        "annual_kwh": _f(raw_hh.get("annual_kwh"), 3500.0),
+        "has_solar": _b(raw_hh.get("has_solar")),
+        "solar_kwp": _f(raw_hh.get("solar_kwp"), 0.0),
+        "has_ev": _b(raw_hh.get("has_ev")),
+        "occupancy_profile": raw_hh.get("occupancy_profile") or "standard",
+        "load_volatility": _f(raw_hh.get("load_volatility"), 0.18),
+    }
+    raw_bat = dict(profile.get("battery") or {})
+    profile["battery"] = {
+        "capacity_kwh": _f(raw_bat.get("capacity_kwh"), 10.0),
+        "max_charge_kw": _f(raw_bat.get("max_charge_kw"), 3.6),
+        "max_discharge_kw": _f(raw_bat.get("max_discharge_kw"), 3.6),
+        "round_trip_eff": _f(raw_bat.get("round_trip_eff"), 0.90),
+        "reserve_soc_pct": _f(raw_bat.get("reserve_soc_pct"), 0.10),
+        "cycle_cap_per_day": _f(raw_bat.get("cycle_cap_per_day"), 1.5),
+    }
+    profile["household"] = hh
+    model = profile.get("forecast_model", "naive")
+    profile["forecast_model"] = model if model in VALID_MODELS else "naive"
+    if not profile.get("handle"):
+        profile["handle"] = f"home_{ctx.cycle}_{len(ctx.fleet.customers)+1}"
+    profile["connection_error"] = _b(profile.get("connection_error"))
     cust = ctx.fleet.onboard(profile)
-    hh = profile["household"]
     tags = []
     if hh.get("has_solar"):
         tags.append("solar")
@@ -182,7 +263,7 @@ def open_ticket(ctx: Ctx, customer_id: int | None, subject: str, body: str, prio
         ctx.conn,
         """insert into support_tickets (customer_id, channel, subject, body, status, priority)
            values (%s,'discord',%s,%s,'open',%s) returning id""",
-        (customer_id, subject, body, priority),
+        (customer_id, subject, body, _i(priority, 3)),
     )
     return {"note": f"ticket #{row['id']} opened: {subject}", "ticket_id": row["id"]}
 
@@ -230,12 +311,14 @@ TOOLS: dict[str, Callable[..., dict]] = {
     "resolve_connection": resolve_connection,
 }
 
+# Every agent can both file and close tasks, so all swarm work flows through the
+# board as a visible lifecycle (todo -> doing -> done), not a write-only intent log.
 ALLOWLIST: dict[str, set[str]] = {
     "ceo":     {"create_task", "update_task", "request_approval"},
-    "trading": {"learn_routine", "set_forecast_model", "create_task"},
-    "finance": {"book_revenue", "book_cost", "trip_kill_switch", "request_approval"},
-    "growth":  {"onboard_customer", "post_community", "request_approval", "create_task"},
-    "support": {"answer_ticket", "escalate_ticket", "resolve_connection", "post_community", "open_ticket"},
+    "trading": {"learn_routine", "set_forecast_model", "create_task", "update_task"},
+    "finance": {"book_revenue", "book_cost", "trip_kill_switch", "request_approval", "create_task", "update_task"},
+    "growth":  {"onboard_customer", "post_community", "request_approval", "create_task", "update_task"},
+    "support": {"answer_ticket", "escalate_ticket", "resolve_connection", "post_community", "open_ticket", "create_task", "update_task"},
 }
 
 
