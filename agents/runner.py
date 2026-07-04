@@ -13,6 +13,7 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import os
 import sys
 import time
 import traceback
@@ -25,12 +26,24 @@ from agents import scripted
 
 SOULS = Path(__file__).parent / "souls"
 
-# Real-time cadences (seconds), compressed for the hands-off demo window.
-CADENCE = {"sim": 3, "heartbeat": 12, "finance": 9, "trading": 15,
-           "growth": 18, "support": 14, "ceo": 30}
+# Real-time cadences (seconds). Override via CADENCE_SIM, CADENCE_HEARTBEAT, etc.
+# Defaults favour demo stability on small Supabase compute (limited Disk IO budget).
+def _cadence_sec(name: str, default: int) -> int:
+    raw = os.environ.get(f"CADENCE_{name.upper()}")
+    return max(1, int(raw)) if raw else default
+
+
+CADENCE = {
+    "sim": _cadence_sec("sim", 15),
+    "heartbeat": _cadence_sec("heartbeat", 60),
+    "finance": _cadence_sec("finance", 30),
+    "trading": _cadence_sec("trading", 45),
+    "growth": _cadence_sec("growth", 120),
+    "support": _cadence_sec("support", 45),
+    "ceo": _cadence_sec("ceo", 90),
+}
 
 # A stronger model for the CEO when LLM mode is on; the rest use the cheap default.
-import os
 CEO_MODEL = os.environ.get("INFERENCE_MODEL_CEO", os.environ.get("INFERENCE_MODEL", "openai/gpt-4o-mini"))
 DEFAULT_MODEL = os.environ.get("INFERENCE_MODEL", "openai/gpt-4o-mini")
 

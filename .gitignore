@@ -234,3 +234,4 @@ dashboard/next-env.d.ts
 # re-include dashboard/lib source (the Python `lib/` rule above would ignore it)
 !dashboard/lib/
 !dashboard/lib/**
+.vercel

@@ -7,7 +7,7 @@ import { actorColor, ago } from "@/lib/format";
 // Self-polling live view of the Supabase tasks table. Polls fast on its own cadence
 // (independent of the heavier snapshot), diffs against the previous poll to flag new
 // tasks and status transitions, and animates them so the board feels realtime.
-const POLL_MS = 2000;
+const POLL_MS = Number(process.env.NEXT_PUBLIC_TASKS_POLL_MS) || 8_000;
 const FLASH_MS = 2600;
 
 type UiStatus = "todo" | "doing" | "blocked" | "done" | "cancelled";

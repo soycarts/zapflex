@@ -92,7 +92,6 @@ export type Snapshot = {
   pnlDays: PnlDay[];
   fleet: Fleet;
   support: Support;
-  tasks: Task[];
   activity: Decision[];
   approvals: Approval[];
   sim: Sim;

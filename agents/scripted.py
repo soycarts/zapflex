@@ -8,6 +8,7 @@ keeps running on rules alone; when an inference key is present the LLM decider
 """
 from __future__ import annotations
 
+import os
 import random
 
 from agents import db
@@ -183,6 +184,14 @@ def finance(ctx: Ctx) -> dict:
 # ---- Growth -------------------------------------------------------------------
 def growth(ctx: Ctx) -> dict:
     results = []
+    fleet_max = int(os.environ.get("DEMO_FLEET_MAX", "999"))
+    if len(ctx.fleet.customers) >= fleet_max:
+        return {
+            "action": "fleet cap",
+            "rationale": f"At demo fleet cap ({fleet_max}); skipping acquisition.",
+            "results": [],
+            "state_summary": {"customers": len(ctx.fleet.customers), "cap": fleet_max},
+        }
     # Acquire a new home most cycles.
     arch = _rng.choice(_ARCHETYPES)
     n_existing = len(ctx.fleet.customers)
