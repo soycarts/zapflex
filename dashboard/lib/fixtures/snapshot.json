@@ -1,0 +1,1966 @@
+{
+ "leaderboard": [
+  {
+   "rank": "1",
+   "handle": "zeta_naive",
+   "region": "C",
+   "captured_savings": "316.6233",
+   "theoretical_optimal": "324.5597",
+   "pct_of_optimal": "0.9755",
+   "fleet_capacity_kwh": "10.0000"
+  },
+  {
+   "rank": "2",
+   "handle": "alpha_stable",
+   "region": "C",
+   "captured_savings": "241.3532",
+   "theoretical_optimal": "247.6352",
+   "pct_of_optimal": "0.9746",
+   "fleet_capacity_kwh": "10.0000"
+  },
+  {
+   "rank": "3",
+   "handle": "beta_solar",
+   "region": "C",
+   "captured_savings": "235.8006",
+   "theoretical_optimal": "244.9136",
+   "pct_of_optimal": "0.9628",
+   "fleet_capacity_kwh": "10.0000"
+  },
+  {
+   "rank": "4",
+   "handle": "theta_varied",
+   "region": "C",
+   "captured_savings": "348.9374",
+   "theoretical_optimal": "365.3278",
+   "pct_of_optimal": "0.9551",
+   "fleet_capacity_kwh": "10.0000"
+  },
+  {
+   "rank": "5",
+   "handle": "epsilon_mixed",
+   "region": "C",
+   "captured_savings": "302.2334",
+   "theoretical_optimal": "316.7211",
+   "pct_of_optimal": "0.9543",
+   "fleet_capacity_kwh": "10.0000"
+  },
+  {
+   "rank": "6",
+   "handle": "new_home_007",
+   "region": "C",
+   "captured_savings": "298.3820",
+   "theoretical_optimal": "313.9363",
+   "pct_of_optimal": "0.9505",
+   "fleet_capacity_kwh": "10.0000"
+  },
+  {
+   "rank": "7",
+   "handle": "omega_home",
+   "region": "C",
+   "captured_savings": "338.9628",
+   "theoretical_optimal": "357.2285",
+   "pct_of_optimal": "0.9489",
+   "fleet_capacity_kwh": "10.0000"
+  },
+  {
+   "rank": "8",
+   "handle": "sigma_varied",
+   "region": "C",
+   "captured_savings": "342.0243",
+   "theoretical_optimal": "360.5883",
+   "pct_of_optimal": "0.9485",
+   "fleet_capacity_kwh": "10.0000"
+  },
+  {
+   "rank": "9",
+   "handle": "gamma_ev_solar",
+   "region": "C",
+   "captured_savings": "378.3865",
+   "theoretical_optimal": "399.4812",
+   "pct_of_optimal": "0.9472",
+   "fleet_capacity_kwh": "13.5000"
+  },
+  {
+   "rank": "10",
+   "handle": "new_home_008",
+   "region": "C",
+   "captured_savings": "340.7597",
+   "theoretical_optimal": "360.1421",
+   "pct_of_optimal": "0.9462",
+   "fleet_capacity_kwh": "10.0000"
+  },
+  {
+   "rank": "11",
+   "handle": "lambda_home",
+   "region": "C",
+   "captured_savings": "339.4389",
+   "theoretical_optimal": "359.6006",
+   "pct_of_optimal": "0.9439",
+   "fleet_capacity_kwh": "10.0000"
+  },
+  {
+   "rank": "12",
+   "handle": "delta_home",
+   "region": "C",
+   "captured_savings": "293.7915",
+   "theoretical_optimal": "311.4733",
+   "pct_of_optimal": "0.9432",
+   "fleet_capacity_kwh": "10.0000"
+  },
+  {
+   "rank": "13",
+   "handle": "delta_varied",
+   "region": "C",
+   "captured_savings": "290.1061",
+   "theoretical_optimal": "308.5245",
+   "pct_of_optimal": "0.9403",
+   "fleet_capacity_kwh": "10.0000"
+  },
+  {
+   "rank": "14",
+   "handle": "new_home_009",
+   "region": "C",
+   "captured_savings": "342.3390",
+   "theoretical_optimal": "364.1281",
+   "pct_of_optimal": "0.9402",
+   "fleet_capacity_kwh": "10.0000"
+  },
+  {
+   "rank": "15",
+   "handle": "charlie_varied",
+   "region": "C",
+   "captured_savings": "302.3443",
+   "theoretical_optimal": "322.2341",
+   "pct_of_optimal": "0.9383",
+   "fleet_capacity_kwh": "10.0000"
+  },
+  {
+   "rank": "16",
+   "handle": "new_home_012",
+   "region": "C",
+   "captured_savings": "291.7466",
+   "theoretical_optimal": "311.1595",
+   "pct_of_optimal": "0.9376",
+   "fleet_capacity_kwh": "10.0000"
+  },
+  {
+   "rank": "17",
+   "handle": "new_home_011",
+   "region": "C",
+   "captured_savings": "340.9788",
+   "theoretical_optimal": "364.4289",
+   "pct_of_optimal": "0.9357",
+   "fleet_capacity_kwh": "10.0000"
+  },
+  {
+   "rank": "18",
+   "handle": "new_home_013",
+   "region": "C",
+   "captured_savings": "289.4816",
+   "theoretical_optimal": "311.5749",
+   "pct_of_optimal": "0.9291",
+   "fleet_capacity_kwh": "10.0000"
+  },
+  {
+   "rank": "19",
+   "handle": "phi_test",
+   "region": "C",
+   "captured_savings": "279.9627",
+   "theoretical_optimal": "303.1103",
+   "pct_of_optimal": "0.9236",
+   "fleet_capacity_kwh": "10.0000"
+  },
+  {
+   "rank": "20",
+   "handle": "new_home_010",
+   "region": "C",
+   "captured_savings": "296.4217",
+   "theoretical_optimal": "323.3842",
+   "pct_of_optimal": "0.9166",
+   "fleet_capacity_kwh": "10.0000"
+  }
+ ],
+ "pnl": {
+  "revenue_share": "757.4593",
+  "grid_services": "1940.7671",
+  "costs": "0.0000",
+  "net": "2698.2264",
+  "customer_count": "20"
+ },
+ "pnlDays": [
+  {
+   "sim_day": "2025-12-27T00:00:00.000Z",
+   "revenue_share": "0.6859",
+   "grid_services": "3.3425",
+   "costs": "0.0000",
+   "net": "4.0284",
+   "customer_count": "3"
+  },
+  {
+   "sim_day": "2025-12-28T00:00:00.000Z",
+   "revenue_share": "0.7387",
+   "grid_services": "3.3425",
+   "costs": "0.0000",
+   "net": "4.0812",
+   "customer_count": "3"
+  },
+  {
+   "sim_day": "2025-12-29T00:00:00.000Z",
+   "revenue_share": "0.6956",
+   "grid_services": "3.3425",
+   "costs": "0.0000",
+   "net": "4.0380",
+   "customer_count": "3"
+  },
+  {
+   "sim_day": "2025-12-30T00:00:00.000Z",
+   "revenue_share": "0.7082",
+   "grid_services": "3.3425",
+   "costs": "0.0000",
+   "net": "4.0507",
+   "customer_count": "3"
+  },
+  {
+   "sim_day": "2025-12-31T00:00:00.000Z",
+   "revenue_share": "1.0061",
+   "grid_services": "4.1644",
+   "costs": "0.0000",
+   "net": "5.1705",
+   "customer_count": "4"
+  },
+  {
+   "sim_day": "2026-01-01T00:00:00.000Z",
+   "revenue_share": "1.7902",
+   "grid_services": "4.9863",
+   "costs": "0.0000",
+   "net": "6.7765",
+   "customer_count": "5"
+  },
+  {
+   "sim_day": "2026-01-02T00:00:00.000Z",
+   "revenue_share": "1.8419",
+   "grid_services": "4.9863",
+   "costs": "0.0000",
+   "net": "6.8282",
+   "customer_count": "5"
+  },
+  {
+   "sim_day": "2026-01-03T00:00:00.000Z",
+   "revenue_share": "1.3197",
+   "grid_services": "4.9863",
+   "costs": "0.0000",
+   "net": "6.3060",
+   "customer_count": "5"
+  },
+  {
+   "sim_day": "2026-01-04T00:00:00.000Z",
+   "revenue_share": "1.3021",
+   "grid_services": "4.9863",
+   "costs": "0.0000",
+   "net": "6.2884",
+   "customer_count": "5"
+  },
+  {
+   "sim_day": "2026-01-05T00:00:00.000Z",
+   "revenue_share": "2.3114",
+   "grid_services": "4.9863",
+   "costs": "0.0000",
+   "net": "7.2977",
+   "customer_count": "5"
+  },
+  {
+   "sim_day": "2026-01-06T00:00:00.000Z",
+   "revenue_share": "1.7142",
+   "grid_services": "4.9863",
+   "costs": "0.0000",
+   "net": "6.7005",
+   "customer_count": "5"
+  },
+  {
+   "sim_day": "2026-01-07T00:00:00.000Z",
+   "revenue_share": "1.5917",
+   "grid_services": "4.9863",
+   "costs": "0.0000",
+   "net": "6.5780",
+   "customer_count": "5"
+  },
+  {
+   "sim_day": "2026-01-08T00:00:00.000Z",
+   "revenue_share": "3.9600",
+   "grid_services": "5.8082",
+   "costs": "0.0000",
+   "net": "9.7683",
+   "customer_count": "6"
+  },
+  {
+   "sim_day": "2026-01-09T00:00:00.000Z",
+   "revenue_share": "1.6272",
+   "grid_services": "5.8082",
+   "costs": "0.0000",
+   "net": "7.4354",
+   "customer_count": "6"
+  },
+  {
+   "sim_day": "2026-01-10T00:00:00.000Z",
+   "revenue_share": "1.7704",
+   "grid_services": "5.8082",
+   "costs": "0.0000",
+   "net": "7.5787",
+   "customer_count": "6"
+  },
+  {
+   "sim_day": "2026-01-11T00:00:00.000Z",
+   "revenue_share": "1.5661",
+   "grid_services": "5.8082",
+   "costs": "0.0000",
+   "net": "7.3743",
+   "customer_count": "6"
+  },
+  {
+   "sim_day": "2026-01-12T00:00:00.000Z",
+   "revenue_share": "1.7622",
+   "grid_services": "5.8082",
+   "costs": "0.0000",
+   "net": "7.5705",
+   "customer_count": "6"
+  },
+  {
+   "sim_day": "2026-01-13T00:00:00.000Z",
+   "revenue_share": "1.5774",
+   "grid_services": "5.8082",
+   "costs": "0.0000",
+   "net": "7.3856",
+   "customer_count": "6"
+  },
+  {
+   "sim_day": "2026-01-14T00:00:00.000Z",
+   "revenue_share": "1.9387",
+   "grid_services": "5.8082",
+   "costs": "0.0000",
+   "net": "7.7470",
+   "customer_count": "6"
+  },
+  {
+   "sim_day": "2026-01-15T00:00:00.000Z",
+   "revenue_share": "1.8703",
+   "grid_services": "5.8082",
+   "costs": "0.0000",
+   "net": "7.6785",
+   "customer_count": "6"
+  },
+  {
+   "sim_day": "2026-01-16T00:00:00.000Z",
+   "revenue_share": "2.4585",
+   "grid_services": "6.6301",
+   "costs": "0.0000",
+   "net": "9.0886",
+   "customer_count": "7"
+  },
+  {
+   "sim_day": "2026-01-17T00:00:00.000Z",
+   "revenue_share": "2.3120",
+   "grid_services": "6.6301",
+   "costs": "0.0000",
+   "net": "8.9422",
+   "customer_count": "7"
+  },
+  {
+   "sim_day": "2026-01-18T00:00:00.000Z",
+   "revenue_share": "2.1831",
+   "grid_services": "6.6301",
+   "costs": "0.0000",
+   "net": "8.8133",
+   "customer_count": "7"
+  },
+  {
+   "sim_day": "2026-01-19T00:00:00.000Z",
+   "revenue_share": "3.0707",
+   "grid_services": "6.6301",
+   "costs": "0.0000",
+   "net": "9.7009",
+   "customer_count": "7"
+  },
+  {
+   "sim_day": "2026-01-20T00:00:00.000Z",
+   "revenue_share": "2.0037",
+   "grid_services": "6.6301",
+   "costs": "0.0000",
+   "net": "8.6339",
+   "customer_count": "7"
+  },
+  {
+   "sim_day": "2026-01-21T00:00:00.000Z",
+   "revenue_share": "2.1669",
+   "grid_services": "6.6301",
+   "costs": "0.0000",
+   "net": "8.7970",
+   "customer_count": "7"
+  },
+  {
+   "sim_day": "2026-01-22T00:00:00.000Z",
+   "revenue_share": "2.5476",
+   "grid_services": "6.6301",
+   "costs": "0.0000",
+   "net": "9.1777",
+   "customer_count": "7"
+  },
+  {
+   "sim_day": "2026-01-23T00:00:00.000Z",
+   "revenue_share": "2.1836",
+   "grid_services": "6.6301",
+   "costs": "0.0000",
+   "net": "8.8138",
+   "customer_count": "7"
+  },
+  {
+   "sim_day": "2026-01-24T00:00:00.000Z",
+   "revenue_share": "2.0805",
+   "grid_services": "6.6301",
+   "costs": "0.0000",
+   "net": "8.7106",
+   "customer_count": "7"
+  },
+  {
+   "sim_day": "2026-01-25T00:00:00.000Z",
+   "revenue_share": "2.2849",
+   "grid_services": "6.6301",
+   "costs": "0.0000",
+   "net": "8.9150",
+   "customer_count": "7"
+  },
+  {
+   "sim_day": "2026-01-26T00:00:00.000Z",
+   "revenue_share": "2.2992",
+   "grid_services": "6.6301",
+   "costs": "0.0000",
+   "net": "8.9293",
+   "customer_count": "7"
+  },
+  {
+   "sim_day": "2026-01-27T00:00:00.000Z",
+   "revenue_share": "2.3921",
+   "grid_services": "6.6301",
+   "costs": "0.0000",
+   "net": "9.0223",
+   "customer_count": "7"
+  },
+  {
+   "sim_day": "2026-01-28T00:00:00.000Z",
+   "revenue_share": "2.6362",
+   "grid_services": "6.6301",
+   "costs": "0.0000",
+   "net": "9.2663",
+   "customer_count": "7"
+  },
+  {
+   "sim_day": "2026-01-29T00:00:00.000Z",
+   "revenue_share": "2.1475",
+   "grid_services": "6.6301",
+   "costs": "0.0000",
+   "net": "8.7777",
+   "customer_count": "7"
+  },
+  {
+   "sim_day": "2026-01-30T00:00:00.000Z",
+   "revenue_share": "2.1454",
+   "grid_services": "6.6301",
+   "costs": "0.0000",
+   "net": "8.7755",
+   "customer_count": "7"
+  },
+  {
+   "sim_day": "2026-01-31T00:00:00.000Z",
+   "revenue_share": "2.0769",
+   "grid_services": "6.6301",
+   "costs": "0.0000",
+   "net": "8.7071",
+   "customer_count": "7"
+  },
+  {
+   "sim_day": "2026-02-01T00:00:00.000Z",
+   "revenue_share": "2.6767",
+   "grid_services": "7.4521",
+   "costs": "0.0000",
+   "net": "10.1288",
+   "customer_count": "8"
+  },
+  {
+   "sim_day": "2026-02-02T00:00:00.000Z",
+   "revenue_share": "2.3395",
+   "grid_services": "7.4521",
+   "costs": "0.0000",
+   "net": "9.7915",
+   "customer_count": "8"
+  },
+  {
+   "sim_day": "2026-02-03T00:00:00.000Z",
+   "revenue_share": "2.6036",
+   "grid_services": "7.4521",
+   "costs": "0.0000",
+   "net": "10.0556",
+   "customer_count": "8"
+  },
+  {
+   "sim_day": "2026-02-04T00:00:00.000Z",
+   "revenue_share": "2.2082",
+   "grid_services": "7.4521",
+   "costs": "0.0000",
+   "net": "9.6602",
+   "customer_count": "8"
+  },
+  {
+   "sim_day": "2026-02-05T00:00:00.000Z",
+   "revenue_share": "2.5195",
+   "grid_services": "7.4521",
+   "costs": "0.0000",
+   "net": "9.9716",
+   "customer_count": "8"
+  },
+  {
+   "sim_day": "2026-02-06T00:00:00.000Z",
+   "revenue_share": "2.2416",
+   "grid_services": "7.4521",
+   "costs": "0.0000",
+   "net": "9.6936",
+   "customer_count": "8"
+  },
+  {
+   "sim_day": "2026-02-07T00:00:00.000Z",
+   "revenue_share": "2.2577",
+   "grid_services": "7.4521",
+   "costs": "0.0000",
+   "net": "9.7098",
+   "customer_count": "8"
+  },
+  {
+   "sim_day": "2026-02-08T00:00:00.000Z",
+   "revenue_share": "2.4698",
+   "grid_services": "7.4521",
+   "costs": "0.0000",
+   "net": "9.9218",
+   "customer_count": "8"
+  },
+  {
+   "sim_day": "2026-02-09T00:00:00.000Z",
+   "revenue_share": "2.7496",
+   "grid_services": "8.2740",
+   "costs": "0.0000",
+   "net": "11.0236",
+   "customer_count": "9"
+  },
+  {
+   "sim_day": "2026-02-10T00:00:00.000Z",
+   "revenue_share": "2.4897",
+   "grid_services": "8.2740",
+   "costs": "0.0000",
+   "net": "10.7637",
+   "customer_count": "9"
+  },
+  {
+   "sim_day": "2026-02-11T00:00:00.000Z",
+   "revenue_share": "2.3324",
+   "grid_services": "8.2740",
+   "costs": "0.0000",
+   "net": "10.6064",
+   "customer_count": "9"
+  },
+  {
+   "sim_day": "2026-02-12T00:00:00.000Z",
+   "revenue_share": "2.2812",
+   "grid_services": "8.2740",
+   "costs": "0.0000",
+   "net": "10.5552",
+   "customer_count": "9"
+  },
+  {
+   "sim_day": "2026-02-13T00:00:00.000Z",
+   "revenue_share": "2.6907",
+   "grid_services": "8.8219",
+   "costs": "0.0000",
+   "net": "11.5127",
+   "customer_count": "10"
+  },
+  {
+   "sim_day": "2026-02-14T00:00:00.000Z",
+   "revenue_share": "2.6380",
+   "grid_services": "8.8219",
+   "costs": "0.0000",
+   "net": "11.4599",
+   "customer_count": "10"
+  },
+  {
+   "sim_day": "2026-02-15T00:00:00.000Z",
+   "revenue_share": "2.4857",
+   "grid_services": "8.8219",
+   "costs": "0.0000",
+   "net": "11.3076",
+   "customer_count": "10"
+  },
+  {
+   "sim_day": "2026-02-16T00:00:00.000Z",
+   "revenue_share": "2.5630",
+   "grid_services": "8.8219",
+   "costs": "0.0000",
+   "net": "11.3849",
+   "customer_count": "10"
+  },
+  {
+   "sim_day": "2026-02-17T00:00:00.000Z",
+   "revenue_share": "2.9019",
+   "grid_services": "8.8219",
+   "costs": "0.0000",
+   "net": "11.7238",
+   "customer_count": "10"
+  },
+  {
+   "sim_day": "2026-02-18T00:00:00.000Z",
+   "revenue_share": "2.4340",
+   "grid_services": "8.8219",
+   "costs": "0.0000",
+   "net": "11.2559",
+   "customer_count": "10"
+  },
+  {
+   "sim_day": "2026-02-19T00:00:00.000Z",
+   "revenue_share": "2.6336",
+   "grid_services": "8.8219",
+   "costs": "0.0000",
+   "net": "11.4555",
+   "customer_count": "10"
+  },
+  {
+   "sim_day": "2026-02-20T00:00:00.000Z",
+   "revenue_share": "2.2501",
+   "grid_services": "8.8219",
+   "costs": "0.0000",
+   "net": "11.0720",
+   "customer_count": "10"
+  },
+  {
+   "sim_day": "2026-02-21T00:00:00.000Z",
+   "revenue_share": "2.6279",
+   "grid_services": "8.8219",
+   "costs": "0.0000",
+   "net": "11.4498",
+   "customer_count": "10"
+  },
+  {
+   "sim_day": "2026-02-22T00:00:00.000Z",
+   "revenue_share": "3.5679",
+   "grid_services": "8.8219",
+   "costs": "0.0000",
+   "net": "12.3898",
+   "customer_count": "10"
+  },
+  {
+   "sim_day": "2026-02-23T00:00:00.000Z",
+   "revenue_share": "3.6798",
+   "grid_services": "8.8219",
+   "costs": "0.0000",
+   "net": "12.5017",
+   "customer_count": "10"
+  },
+  {
+   "sim_day": "2026-02-24T00:00:00.000Z",
+   "revenue_share": "2.7942",
+   "grid_services": "8.8219",
+   "costs": "0.0000",
+   "net": "11.6161",
+   "customer_count": "10"
+  },
+  {
+   "sim_day": "2026-02-25T00:00:00.000Z",
+   "revenue_share": "2.8070",
+   "grid_services": "8.8219",
+   "costs": "0.0000",
+   "net": "11.6290",
+   "customer_count": "10"
+  },
+  {
+   "sim_day": "2026-02-26T00:00:00.000Z",
+   "revenue_share": "2.7934",
+   "grid_services": "8.8219",
+   "costs": "0.0000",
+   "net": "11.6153",
+   "customer_count": "10"
+  },
+  {
+   "sim_day": "2026-02-27T00:00:00.000Z",
+   "revenue_share": "3.4752",
+   "grid_services": "8.8219",
+   "costs": "0.0000",
+   "net": "12.2971",
+   "customer_count": "10"
+  },
+  {
+   "sim_day": "2026-02-28T00:00:00.000Z",
+   "revenue_share": "2.5768",
+   "grid_services": "8.8219",
+   "costs": "0.0000",
+   "net": "11.3987",
+   "customer_count": "10"
+  },
+  {
+   "sim_day": "2026-03-01T00:00:00.000Z",
+   "revenue_share": "3.5431",
+   "grid_services": "9.6438",
+   "costs": "0.0000",
+   "net": "13.1869",
+   "customer_count": "11"
+  },
+  {
+   "sim_day": "2026-03-02T00:00:00.000Z",
+   "revenue_share": "4.9282",
+   "grid_services": "9.6438",
+   "costs": "0.0000",
+   "net": "14.5721",
+   "customer_count": "11"
+  },
+  {
+   "sim_day": "2026-03-03T00:00:00.000Z",
+   "revenue_share": "4.5753",
+   "grid_services": "9.6438",
+   "costs": "0.0000",
+   "net": "14.2191",
+   "customer_count": "11"
+  },
+  {
+   "sim_day": "2026-03-04T00:00:00.000Z",
+   "revenue_share": "5.0265",
+   "grid_services": "9.6438",
+   "costs": "0.0000",
+   "net": "14.6703",
+   "customer_count": "11"
+  },
+  {
+   "sim_day": "2026-03-05T00:00:00.000Z",
+   "revenue_share": "3.6512",
+   "grid_services": "9.6438",
+   "costs": "0.0000",
+   "net": "13.2951",
+   "customer_count": "11"
+  },
+  {
+   "sim_day": "2026-03-06T00:00:00.000Z",
+   "revenue_share": "4.2109",
+   "grid_services": "9.6438",
+   "costs": "0.0000",
+   "net": "13.8548",
+   "customer_count": "11"
+  },
+  {
+   "sim_day": "2026-03-07T00:00:00.000Z",
+   "revenue_share": "4.1418",
+   "grid_services": "9.6438",
+   "costs": "0.0000",
+   "net": "13.7857",
+   "customer_count": "11"
+  },
+  {
+   "sim_day": "2026-03-08T00:00:00.000Z",
+   "revenue_share": "3.9735",
+   "grid_services": "9.6438",
+   "costs": "0.0000",
+   "net": "13.6174",
+   "customer_count": "11"
+  },
+  {
+   "sim_day": "2026-03-09T00:00:00.000Z",
+   "revenue_share": "4.9906",
+   "grid_services": "9.6438",
+   "costs": "0.0000",
+   "net": "14.6344",
+   "customer_count": "11"
+  },
+  {
+   "sim_day": "2026-03-10T00:00:00.000Z",
+   "revenue_share": "3.9936",
+   "grid_services": "9.6438",
+   "costs": "0.0000",
+   "net": "13.6375",
+   "customer_count": "11"
+  },
+  {
+   "sim_day": "2026-03-11T00:00:00.000Z",
+   "revenue_share": "5.1860",
+   "grid_services": "9.6438",
+   "costs": "0.0000",
+   "net": "14.8299",
+   "customer_count": "11"
+  },
+  {
+   "sim_day": "2026-03-12T00:00:00.000Z",
+   "revenue_share": "3.8582",
+   "grid_services": "9.6438",
+   "costs": "0.0000",
+   "net": "13.5021",
+   "customer_count": "11"
+  },
+  {
+   "sim_day": "2026-03-13T00:00:00.000Z",
+   "revenue_share": "5.9684",
+   "grid_services": "9.6438",
+   "costs": "0.0000",
+   "net": "15.6122",
+   "customer_count": "11"
+  },
+  {
+   "sim_day": "2026-03-14T00:00:00.000Z",
+   "revenue_share": "4.2139",
+   "grid_services": "9.6438",
+   "costs": "0.0000",
+   "net": "13.8577",
+   "customer_count": "11"
+  },
+  {
+   "sim_day": "2026-03-15T00:00:00.000Z",
+   "revenue_share": "4.6358",
+   "grid_services": "9.6438",
+   "costs": "0.0000",
+   "net": "14.2796",
+   "customer_count": "11"
+  },
+  {
+   "sim_day": "2026-03-16T00:00:00.000Z",
+   "revenue_share": "6.6065",
+   "grid_services": "10.4658",
+   "costs": "0.0000",
+   "net": "17.0722",
+   "customer_count": "12"
+  },
+  {
+   "sim_day": "2026-03-17T00:00:00.000Z",
+   "revenue_share": "5.0613",
+   "grid_services": "10.4658",
+   "costs": "0.0000",
+   "net": "15.5271",
+   "customer_count": "12"
+  },
+  {
+   "sim_day": "2026-03-18T00:00:00.000Z",
+   "revenue_share": "4.6680",
+   "grid_services": "10.4658",
+   "costs": "0.0000",
+   "net": "15.1338",
+   "customer_count": "12"
+  },
+  {
+   "sim_day": "2026-03-19T00:00:00.000Z",
+   "revenue_share": "4.8943",
+   "grid_services": "10.4658",
+   "costs": "0.0000",
+   "net": "15.3601",
+   "customer_count": "12"
+  },
+  {
+   "sim_day": "2026-03-20T00:00:00.000Z",
+   "revenue_share": "4.7986",
+   "grid_services": "10.4658",
+   "costs": "0.0000",
+   "net": "15.2644",
+   "customer_count": "12"
+  },
+  {
+   "sim_day": "2026-03-21T00:00:00.000Z",
+   "revenue_share": "5.2404",
+   "grid_services": "11.2877",
+   "costs": "0.0000",
+   "net": "16.5281",
+   "customer_count": "13"
+  },
+  {
+   "sim_day": "2026-03-22T00:00:00.000Z",
+   "revenue_share": "4.7508",
+   "grid_services": "11.2877",
+   "costs": "0.0000",
+   "net": "16.0385",
+   "customer_count": "13"
+  },
+  {
+   "sim_day": "2026-03-23T00:00:00.000Z",
+   "revenue_share": "5.3132",
+   "grid_services": "11.2877",
+   "costs": "0.0000",
+   "net": "16.6009",
+   "customer_count": "13"
+  },
+  {
+   "sim_day": "2026-03-24T00:00:00.000Z",
+   "revenue_share": "5.1989",
+   "grid_services": "11.2877",
+   "costs": "0.0000",
+   "net": "16.4866",
+   "customer_count": "13"
+  },
+  {
+   "sim_day": "2026-03-25T00:00:00.000Z",
+   "revenue_share": "7.2845",
+   "grid_services": "11.2877",
+   "costs": "0.0000",
+   "net": "18.5722",
+   "customer_count": "13"
+  },
+  {
+   "sim_day": "2026-03-26T00:00:00.000Z",
+   "revenue_share": "5.2509",
+   "grid_services": "11.2877",
+   "costs": "0.0000",
+   "net": "16.5386",
+   "customer_count": "13"
+  },
+  {
+   "sim_day": "2026-03-27T00:00:00.000Z",
+   "revenue_share": "4.7718",
+   "grid_services": "11.2877",
+   "costs": "0.0000",
+   "net": "16.0595",
+   "customer_count": "13"
+  },
+  {
+   "sim_day": "2026-03-28T00:00:00.000Z",
+   "revenue_share": "7.4325",
+   "grid_services": "11.2877",
+   "costs": "0.0000",
+   "net": "18.7201",
+   "customer_count": "13"
+  },
+  {
+   "sim_day": "2026-03-29T00:00:00.000Z",
+   "revenue_share": "5.1073",
+   "grid_services": "12.1096",
+   "costs": "0.0000",
+   "net": "17.2169",
+   "customer_count": "14"
+  },
+  {
+   "sim_day": "2026-03-29T23:00:00.000Z",
+   "revenue_share": "7.4572",
+   "grid_services": "12.1096",
+   "costs": "0.0000",
+   "net": "19.5668",
+   "customer_count": "14"
+  },
+  {
+   "sim_day": "2026-03-30T23:00:00.000Z",
+   "revenue_share": "5.1459",
+   "grid_services": "12.1096",
+   "costs": "0.0000",
+   "net": "17.2555",
+   "customer_count": "14"
+  },
+  {
+   "sim_day": "2026-03-31T23:00:00.000Z",
+   "revenue_share": "4.8926",
+   "grid_services": "12.1096",
+   "costs": "0.0000",
+   "net": "17.0022",
+   "customer_count": "14"
+  },
+  {
+   "sim_day": "2026-04-01T23:00:00.000Z",
+   "revenue_share": "4.0466",
+   "grid_services": "12.1096",
+   "costs": "0.0000",
+   "net": "16.1562",
+   "customer_count": "14"
+  },
+  {
+   "sim_day": "2026-04-02T23:00:00.000Z",
+   "revenue_share": "5.5106",
+   "grid_services": "12.1096",
+   "costs": "0.0000",
+   "net": "17.6202",
+   "customer_count": "14"
+  },
+  {
+   "sim_day": "2026-04-03T23:00:00.000Z",
+   "revenue_share": "4.9344",
+   "grid_services": "12.1096",
+   "costs": "0.0000",
+   "net": "17.0440",
+   "customer_count": "14"
+  },
+  {
+   "sim_day": "2026-04-04T23:00:00.000Z",
+   "revenue_share": "6.1478",
+   "grid_services": "12.1096",
+   "costs": "0.0000",
+   "net": "18.2574",
+   "customer_count": "14"
+  },
+  {
+   "sim_day": "2026-04-05T23:00:00.000Z",
+   "revenue_share": "5.0373",
+   "grid_services": "12.1096",
+   "costs": "0.0000",
+   "net": "17.1468",
+   "customer_count": "14"
+  },
+  {
+   "sim_day": "2026-04-06T23:00:00.000Z",
+   "revenue_share": "7.4926",
+   "grid_services": "12.1096",
+   "costs": "0.0000",
+   "net": "19.6022",
+   "customer_count": "14"
+  },
+  {
+   "sim_day": "2026-04-07T23:00:00.000Z",
+   "revenue_share": "5.2141",
+   "grid_services": "12.1096",
+   "costs": "0.0000",
+   "net": "17.3237",
+   "customer_count": "14"
+  },
+  {
+   "sim_day": "2026-04-08T23:00:00.000Z",
+   "revenue_share": "4.7456",
+   "grid_services": "12.9315",
+   "costs": "0.0000",
+   "net": "17.6771",
+   "customer_count": "15"
+  },
+  {
+   "sim_day": "2026-04-09T23:00:00.000Z",
+   "revenue_share": "4.9498",
+   "grid_services": "12.9315",
+   "costs": "0.0000",
+   "net": "17.8813",
+   "customer_count": "15"
+  },
+  {
+   "sim_day": "2026-04-10T23:00:00.000Z",
+   "revenue_share": "4.0983",
+   "grid_services": "12.9315",
+   "costs": "0.0000",
+   "net": "17.0298",
+   "customer_count": "15"
+  },
+  {
+   "sim_day": "2026-04-11T23:00:00.000Z",
+   "revenue_share": "7.0638",
+   "grid_services": "12.9315",
+   "costs": "0.0000",
+   "net": "19.9953",
+   "customer_count": "15"
+  },
+  {
+   "sim_day": "2026-04-12T23:00:00.000Z",
+   "revenue_share": "4.7926",
+   "grid_services": "12.9315",
+   "costs": "0.0000",
+   "net": "17.7241",
+   "customer_count": "15"
+  },
+  {
+   "sim_day": "2026-04-13T23:00:00.000Z",
+   "revenue_share": "4.4361",
+   "grid_services": "12.9315",
+   "costs": "0.0000",
+   "net": "17.3676",
+   "customer_count": "15"
+  },
+  {
+   "sim_day": "2026-04-14T23:00:00.000Z",
+   "revenue_share": "5.7436",
+   "grid_services": "12.9315",
+   "costs": "0.0000",
+   "net": "18.6751",
+   "customer_count": "15"
+  },
+  {
+   "sim_day": "2026-04-15T23:00:00.000Z",
+   "revenue_share": "5.2456",
+   "grid_services": "12.9315",
+   "costs": "0.0000",
+   "net": "18.1771",
+   "customer_count": "15"
+  },
+  {
+   "sim_day": "2026-04-16T23:00:00.000Z",
+   "revenue_share": "5.3624",
+   "grid_services": "12.9315",
+   "costs": "0.0000",
+   "net": "18.2939",
+   "customer_count": "15"
+  },
+  {
+   "sim_day": "2026-04-17T23:00:00.000Z",
+   "revenue_share": "6.1399",
+   "grid_services": "12.9315",
+   "costs": "0.0000",
+   "net": "19.0714",
+   "customer_count": "15"
+  },
+  {
+   "sim_day": "2026-04-18T23:00:00.000Z",
+   "revenue_share": "5.1366",
+   "grid_services": "12.9315",
+   "costs": "0.0000",
+   "net": "18.0681",
+   "customer_count": "15"
+  },
+  {
+   "sim_day": "2026-04-19T23:00:00.000Z",
+   "revenue_share": "4.2594",
+   "grid_services": "12.9315",
+   "costs": "0.0000",
+   "net": "17.1909",
+   "customer_count": "15"
+  },
+  {
+   "sim_day": "2026-04-20T23:00:00.000Z",
+   "revenue_share": "5.8932",
+   "grid_services": "12.9315",
+   "costs": "0.0000",
+   "net": "18.8248",
+   "customer_count": "15"
+  },
+  {
+   "sim_day": "2026-04-21T23:00:00.000Z",
+   "revenue_share": "6.6696",
+   "grid_services": "12.9315",
+   "costs": "0.0000",
+   "net": "19.6011",
+   "customer_count": "15"
+  },
+  {
+   "sim_day": "2026-04-22T23:00:00.000Z",
+   "revenue_share": "5.3662",
+   "grid_services": "12.9315",
+   "costs": "0.0000",
+   "net": "18.2977",
+   "customer_count": "15"
+  },
+  {
+   "sim_day": "2026-04-23T23:00:00.000Z",
+   "revenue_share": "5.0752",
+   "grid_services": "12.9315",
+   "costs": "0.0000",
+   "net": "18.0067",
+   "customer_count": "15"
+  },
+  {
+   "sim_day": "2026-04-24T23:00:00.000Z",
+   "revenue_share": "4.8827",
+   "grid_services": "12.9315",
+   "costs": "0.0000",
+   "net": "17.8143",
+   "customer_count": "15"
+  },
+  {
+   "sim_day": "2026-04-25T23:00:00.000Z",
+   "revenue_share": "4.6612",
+   "grid_services": "12.9315",
+   "costs": "0.0000",
+   "net": "17.5927",
+   "customer_count": "15"
+  },
+  {
+   "sim_day": "2026-04-26T23:00:00.000Z",
+   "revenue_share": "4.8915",
+   "grid_services": "12.9315",
+   "costs": "0.0000",
+   "net": "17.8231",
+   "customer_count": "15"
+  },
+  {
+   "sim_day": "2026-04-27T23:00:00.000Z",
+   "revenue_share": "4.6341",
+   "grid_services": "12.9315",
+   "costs": "0.0000",
+   "net": "17.5656",
+   "customer_count": "15"
+  },
+  {
+   "sim_day": "2026-04-28T23:00:00.000Z",
+   "revenue_share": "7.1378",
+   "grid_services": "12.9315",
+   "costs": "0.0000",
+   "net": "20.0694",
+   "customer_count": "15"
+  },
+  {
+   "sim_day": "2026-04-29T23:00:00.000Z",
+   "revenue_share": "8.4423",
+   "grid_services": "13.7534",
+   "costs": "0.0000",
+   "net": "22.1957",
+   "customer_count": "16"
+  },
+  {
+   "sim_day": "2026-04-30T23:00:00.000Z",
+   "revenue_share": "4.7615",
+   "grid_services": "13.7534",
+   "costs": "0.0000",
+   "net": "18.5149",
+   "customer_count": "16"
+  },
+  {
+   "sim_day": "2026-05-01T23:00:00.000Z",
+   "revenue_share": "4.6145",
+   "grid_services": "13.7534",
+   "costs": "0.0000",
+   "net": "18.3679",
+   "customer_count": "16"
+  },
+  {
+   "sim_day": "2026-05-02T23:00:00.000Z",
+   "revenue_share": "4.3870",
+   "grid_services": "13.7534",
+   "costs": "0.0000",
+   "net": "18.1405",
+   "customer_count": "16"
+  },
+  {
+   "sim_day": "2026-05-03T23:00:00.000Z",
+   "revenue_share": "4.9148",
+   "grid_services": "13.7534",
+   "costs": "0.0000",
+   "net": "18.6683",
+   "customer_count": "16"
+  },
+  {
+   "sim_day": "2026-05-04T23:00:00.000Z",
+   "revenue_share": "4.2871",
+   "grid_services": "13.7534",
+   "costs": "0.0000",
+   "net": "18.0405",
+   "customer_count": "16"
+  },
+  {
+   "sim_day": "2026-05-05T23:00:00.000Z",
+   "revenue_share": "4.8025",
+   "grid_services": "13.7534",
+   "costs": "0.0000",
+   "net": "18.5560",
+   "customer_count": "16"
+  },
+  {
+   "sim_day": "2026-05-06T23:00:00.000Z",
+   "revenue_share": "4.9409",
+   "grid_services": "13.7534",
+   "costs": "0.0000",
+   "net": "18.6943",
+   "customer_count": "16"
+  },
+  {
+   "sim_day": "2026-05-07T23:00:00.000Z",
+   "revenue_share": "4.6292",
+   "grid_services": "13.7534",
+   "costs": "0.0000",
+   "net": "18.3826",
+   "customer_count": "16"
+  },
+  {
+   "sim_day": "2026-05-08T23:00:00.000Z",
+   "revenue_share": "4.3932",
+   "grid_services": "13.7534",
+   "costs": "0.0000",
+   "net": "18.1466",
+   "customer_count": "16"
+  },
+  {
+   "sim_day": "2026-05-09T23:00:00.000Z",
+   "revenue_share": "4.7587",
+   "grid_services": "13.7534",
+   "costs": "0.0000",
+   "net": "18.5121",
+   "customer_count": "16"
+  },
+  {
+   "sim_day": "2026-05-10T23:00:00.000Z",
+   "revenue_share": "4.1506",
+   "grid_services": "13.7534",
+   "costs": "0.0000",
+   "net": "17.9041",
+   "customer_count": "16"
+  },
+  {
+   "sim_day": "2026-05-11T23:00:00.000Z",
+   "revenue_share": "4.7809",
+   "grid_services": "13.7534",
+   "costs": "0.0000",
+   "net": "18.5343",
+   "customer_count": "16"
+  },
+  {
+   "sim_day": "2026-05-12T23:00:00.000Z",
+   "revenue_share": "4.6932",
+   "grid_services": "13.7534",
+   "costs": "0.0000",
+   "net": "18.4466",
+   "customer_count": "16"
+  },
+  {
+   "sim_day": "2026-05-13T23:00:00.000Z",
+   "revenue_share": "4.4800",
+   "grid_services": "13.7534",
+   "costs": "0.0000",
+   "net": "18.2334",
+   "customer_count": "16"
+  },
+  {
+   "sim_day": "2026-05-14T23:00:00.000Z",
+   "revenue_share": "4.7976",
+   "grid_services": "13.7534",
+   "costs": "0.0000",
+   "net": "18.5511",
+   "customer_count": "16"
+  },
+  {
+   "sim_day": "2026-05-15T23:00:00.000Z",
+   "revenue_share": "4.3976",
+   "grid_services": "14.5753",
+   "costs": "0.0000",
+   "net": "18.9730",
+   "customer_count": "17"
+  },
+  {
+   "sim_day": "2026-05-16T23:00:00.000Z",
+   "revenue_share": "5.3595",
+   "grid_services": "14.5753",
+   "costs": "0.0000",
+   "net": "19.9348",
+   "customer_count": "17"
+  },
+  {
+   "sim_day": "2026-05-17T23:00:00.000Z",
+   "revenue_share": "4.6216",
+   "grid_services": "14.5753",
+   "costs": "0.0000",
+   "net": "19.1969",
+   "customer_count": "17"
+  },
+  {
+   "sim_day": "2026-05-18T23:00:00.000Z",
+   "revenue_share": "5.0411",
+   "grid_services": "14.5753",
+   "costs": "0.0000",
+   "net": "19.6164",
+   "customer_count": "17"
+  },
+  {
+   "sim_day": "2026-05-19T23:00:00.000Z",
+   "revenue_share": "5.9746",
+   "grid_services": "14.5753",
+   "costs": "0.0000",
+   "net": "20.5499",
+   "customer_count": "17"
+  },
+  {
+   "sim_day": "2026-05-20T23:00:00.000Z",
+   "revenue_share": "5.1687",
+   "grid_services": "14.5753",
+   "costs": "0.0000",
+   "net": "19.7440",
+   "customer_count": "17"
+  },
+  {
+   "sim_day": "2026-05-21T23:00:00.000Z",
+   "revenue_share": "5.1733",
+   "grid_services": "14.5753",
+   "costs": "0.0000",
+   "net": "19.7487",
+   "customer_count": "17"
+  },
+  {
+   "sim_day": "2026-05-22T23:00:00.000Z",
+   "revenue_share": "5.8500",
+   "grid_services": "14.5753",
+   "costs": "0.0000",
+   "net": "20.4253",
+   "customer_count": "17"
+  },
+  {
+   "sim_day": "2026-05-23T23:00:00.000Z",
+   "revenue_share": "4.8945",
+   "grid_services": "14.5753",
+   "costs": "0.0000",
+   "net": "19.4698",
+   "customer_count": "17"
+  },
+  {
+   "sim_day": "2026-05-24T23:00:00.000Z",
+   "revenue_share": "4.7289",
+   "grid_services": "14.5753",
+   "costs": "0.0000",
+   "net": "19.3042",
+   "customer_count": "17"
+  },
+  {
+   "sim_day": "2026-05-25T23:00:00.000Z",
+   "revenue_share": "4.9296",
+   "grid_services": "14.5753",
+   "costs": "0.0000",
+   "net": "19.5050",
+   "customer_count": "17"
+  },
+  {
+   "sim_day": "2026-05-26T23:00:00.000Z",
+   "revenue_share": "4.2795",
+   "grid_services": "14.5753",
+   "costs": "0.0000",
+   "net": "18.8549",
+   "customer_count": "17"
+  },
+  {
+   "sim_day": "2026-05-27T23:00:00.000Z",
+   "revenue_share": "5.3391",
+   "grid_services": "14.5753",
+   "costs": "0.0000",
+   "net": "19.9144",
+   "customer_count": "17"
+  },
+  {
+   "sim_day": "2026-05-28T23:00:00.000Z",
+   "revenue_share": "5.4734",
+   "grid_services": "15.3973",
+   "costs": "0.0000",
+   "net": "20.8706",
+   "customer_count": "18"
+  },
+  {
+   "sim_day": "2026-05-29T23:00:00.000Z",
+   "revenue_share": "4.5953",
+   "grid_services": "15.3973",
+   "costs": "0.0000",
+   "net": "19.9926",
+   "customer_count": "18"
+  },
+  {
+   "sim_day": "2026-05-30T23:00:00.000Z",
+   "revenue_share": "5.0511",
+   "grid_services": "15.3973",
+   "costs": "0.0000",
+   "net": "20.4483",
+   "customer_count": "18"
+  },
+  {
+   "sim_day": "2026-05-31T23:00:00.000Z",
+   "revenue_share": "5.4968",
+   "grid_services": "15.3973",
+   "costs": "0.0000",
+   "net": "20.8940",
+   "customer_count": "18"
+  },
+  {
+   "sim_day": "2026-06-01T23:00:00.000Z",
+   "revenue_share": "5.0582",
+   "grid_services": "15.3973",
+   "costs": "0.0000",
+   "net": "20.4554",
+   "customer_count": "18"
+  },
+  {
+   "sim_day": "2026-06-02T23:00:00.000Z",
+   "revenue_share": "5.0079",
+   "grid_services": "15.3973",
+   "costs": "0.0000",
+   "net": "20.4052",
+   "customer_count": "18"
+  },
+  {
+   "sim_day": "2026-06-03T23:00:00.000Z",
+   "revenue_share": "6.4154",
+   "grid_services": "15.3973",
+   "costs": "0.0000",
+   "net": "21.8126",
+   "customer_count": "18"
+  },
+  {
+   "sim_day": "2026-06-04T23:00:00.000Z",
+   "revenue_share": "6.6228",
+   "grid_services": "15.3973",
+   "costs": "0.0000",
+   "net": "22.0201",
+   "customer_count": "18"
+  },
+  {
+   "sim_day": "2026-06-05T23:00:00.000Z",
+   "revenue_share": "6.4393",
+   "grid_services": "15.3973",
+   "costs": "0.0000",
+   "net": "21.8365",
+   "customer_count": "18"
+  },
+  {
+   "sim_day": "2026-06-06T23:00:00.000Z",
+   "revenue_share": "8.2963",
+   "grid_services": "15.3973",
+   "costs": "0.0000",
+   "net": "23.6936",
+   "customer_count": "18"
+  },
+  {
+   "sim_day": "2026-06-07T23:00:00.000Z",
+   "revenue_share": "5.1771",
+   "grid_services": "15.3973",
+   "costs": "0.0000",
+   "net": "20.5744",
+   "customer_count": "18"
+  },
+  {
+   "sim_day": "2026-06-08T23:00:00.000Z",
+   "revenue_share": "5.3056",
+   "grid_services": "15.3973",
+   "costs": "0.0000",
+   "net": "20.7029",
+   "customer_count": "18"
+  },
+  {
+   "sim_day": "2026-06-09T23:00:00.000Z",
+   "revenue_share": "5.6511",
+   "grid_services": "15.3973",
+   "costs": "0.0000",
+   "net": "21.0483",
+   "customer_count": "18"
+  },
+  {
+   "sim_day": "2026-06-10T23:00:00.000Z",
+   "revenue_share": "4.4804",
+   "grid_services": "15.3973",
+   "costs": "0.0000",
+   "net": "19.8776",
+   "customer_count": "18"
+  },
+  {
+   "sim_day": "2026-06-11T23:00:00.000Z",
+   "revenue_share": "5.1952",
+   "grid_services": "15.3973",
+   "costs": "0.0000",
+   "net": "20.5925",
+   "customer_count": "18"
+  },
+  {
+   "sim_day": "2026-06-12T23:00:00.000Z",
+   "revenue_share": "7.4729",
+   "grid_services": "15.3973",
+   "costs": "0.0000",
+   "net": "22.8701",
+   "customer_count": "18"
+  },
+  {
+   "sim_day": "2026-06-13T23:00:00.000Z",
+   "revenue_share": "7.4311",
+   "grid_services": "15.3973",
+   "costs": "0.0000",
+   "net": "22.8283",
+   "customer_count": "18"
+  },
+  {
+   "sim_day": "2026-06-14T23:00:00.000Z",
+   "revenue_share": "5.6038",
+   "grid_services": "15.3973",
+   "costs": "0.0000",
+   "net": "21.0010",
+   "customer_count": "18"
+  },
+  {
+   "sim_day": "2026-06-15T23:00:00.000Z",
+   "revenue_share": "5.8309",
+   "grid_services": "15.3973",
+   "costs": "0.0000",
+   "net": "21.2282",
+   "customer_count": "18"
+  },
+  {
+   "sim_day": "2026-06-16T23:00:00.000Z",
+   "revenue_share": "5.7516",
+   "grid_services": "15.3973",
+   "costs": "0.0000",
+   "net": "21.1489",
+   "customer_count": "18"
+  },
+  {
+   "sim_day": "2026-06-17T23:00:00.000Z",
+   "revenue_share": "7.0844",
+   "grid_services": "15.3973",
+   "costs": "0.0000",
+   "net": "22.4817",
+   "customer_count": "18"
+  },
+  {
+   "sim_day": "2026-06-18T23:00:00.000Z",
+   "revenue_share": "6.4888",
+   "grid_services": "15.3973",
+   "costs": "0.0000",
+   "net": "21.8860",
+   "customer_count": "18"
+  },
+  {
+   "sim_day": "2026-06-19T23:00:00.000Z",
+   "revenue_share": "5.9622",
+   "grid_services": "15.3973",
+   "costs": "0.0000",
+   "net": "21.3594",
+   "customer_count": "18"
+  },
+  {
+   "sim_day": "2026-06-20T23:00:00.000Z",
+   "revenue_share": "4.6664",
+   "grid_services": "15.3973",
+   "costs": "0.0000",
+   "net": "20.0637",
+   "customer_count": "18"
+  },
+  {
+   "sim_day": "2026-06-21T23:00:00.000Z",
+   "revenue_share": "7.9785",
+   "grid_services": "15.3973",
+   "costs": "0.0000",
+   "net": "23.3757",
+   "customer_count": "18"
+  },
+  {
+   "sim_day": "2026-06-22T23:00:00.000Z",
+   "revenue_share": "12.1347",
+   "grid_services": "15.3973",
+   "costs": "0.0000",
+   "net": "27.5320",
+   "customer_count": "18"
+  }
+ ],
+ "fleet": {
+  "total_capacity_kwh": "203.5000",
+  "flexible_kw": "62.2000",
+  "available_shift_kwh": "0.0000",
+  "customer_count": "20"
+ },
+ "support": {
+  "open_tickets": "0",
+  "escalated": "0",
+  "avg_response_secs": null,
+  "oldest_open_age_secs": null
+ },
+ "activity": [
+  {
+   "id": "1796",
+   "agent": "growth",
+   "action": "llm cycle",
+   "rationale": "The leaderboard shows room for improvement among newer homes. Promoting model upgrades can help them capture more savings. | task already open #242: Engage new customers with model upgrade tips; posted to community: Hey community! Did you know switching to our 'learned' model",
+   "sim_time": "2026-06-23T00:00:00.000Z",
+   "created_at": "2026-06-26T10:03:28.339Z"
+  },
+  {
+   "id": "1795",
+   "agent": "finance",
+   "action": "llm cycle",
+   "rationale": "The P&L milestone has been reached, so we should update the task to reflect this achievement. | task #548 -> done",
+   "sim_time": "2026-06-23T00:00:00.000Z",
+   "created_at": "2026-06-26T10:03:24.873Z"
+  },
+  {
+   "id": "1794",
+   "agent": "support",
+   "action": "llm cycle",
+   "rationale": "No open tickets or escalated issues require immediate attention. All recent actions and tasks indicate ongoing operations without critical support needs. | ",
+   "sim_time": "2026-06-23T00:00:00.000Z",
+   "created_at": "2026-06-26T10:03:03.095Z"
+  },
+  {
+   "id": "1793",
+   "agent": "trading",
+   "action": "llm cycle",
+   "rationale": "new_home_010 has the lowest pct_of_optimal among homes with solar and EV, indicating room for improvement. It will be evaluated for routine learning. | no change for new_home_010: new_home_010 already on learned; task #153 -> doing",
+   "sim_time": "2026-06-23T00:00:00.000Z",
+   "created_at": "2026-06-26T10:03:01.863Z"
+  },
+  {
+   "id": "1792",
+   "agent": "finance",
+   "action": "llm cycle",
+   "rationale": "Book revenue from captured savings and grid services for the current sim day. | ledger already up to date; created task #548: P&L milestone reached - £2698.2264 net revenue",
+   "sim_time": "2026-06-23T00:00:00.000Z",
+   "created_at": "2026-06-26T10:02:55.215Z"
+  },
+  {
+   "id": "1791",
+   "agent": "finance",
+   "action": "llm cycle",
+   "rationale": "Book revenue for the final sim day as per the tasks board. | ledger already up to date; task #545 -> done",
+   "sim_time": "2026-06-23T00:00:00.000Z",
+   "created_at": "2026-06-26T10:02:24.742Z"
+  },
+  {
+   "id": "1790",
+   "agent": "support",
+   "action": "llm cycle",
+   "rationale": "No open tickets or escalated issues require immediate attention. The fleet is performing well overall, with no new support tasks needed. | ",
+   "sim_time": "2026-06-23T00:00:00.000Z",
+   "created_at": "2026-06-26T10:02:18.550Z"
+  },
+  {
+   "id": "1789",
+   "agent": "trading",
+   "action": "llm cycle",
+   "rationale": "new_home_010 has the lowest pct_of_optimal among homes with both solar and EV, indicating room for improvement by learning its routine. | no change for new_home_010: new_home_010 already on learned; set new_home_010 forecast model -> learned; created task #547: Evaluate new_home_010 performance after model upgrade; task #546 -> done",
+   "sim_time": "2026-06-23T00:00:00.000Z",
+   "created_at": "2026-06-26T10:02:17.302Z"
+  },
+  {
+   "id": "1788",
+   "agent": "ceo",
+   "action": "llm cycle",
+   "rationale": "The fleet is performing well, but there are still homes below optimal performance. Focus on improving forecast accuracy for homes like 'phi_test' and 'new_home_010'. | task already open #432: Improve forecast for phi_test; created task #546: Enhance forecast for new_home_010",
+   "sim_time": "2026-06-23T00:00:00.000Z",
+   "created_at": "2026-06-26T10:02:13.808Z"
+  },
+  {
+   "id": "1787",
+   "agent": "finance",
+   "action": "llm cycle",
+   "rationale": "Book the revenue from captured savings and grid services for the current sim day. | ledger already up to date; created task #545: Booked revenue for sim day 179/179",
+   "sim_time": "2026-06-23T00:00:00.000Z",
+   "created_at": "2026-06-26T10:01:54.071Z"
+  },
+  {
+   "id": "1786",
+   "agent": "support",
+   "action": "llm cycle",
+   "rationale": "No open tickets or escalated issues require immediate attention. The fleet homes are performing well overall, with no urgent support needs identified. | ",
+   "sim_time": "2026-06-23T00:00:00.000Z",
+   "created_at": "2026-06-26T10:01:31.506Z"
+  },
+  {
+   "id": "1785",
+   "agent": "trading",
+   "action": "llm cycle",
+   "rationale": "new_home_010 has the lowest pct_of_optimal among homes with solar and EV, indicating room for improvement by learning its routine. | no change for new_home_010: new_home_010 already on learned; set new_home_010 forecast model -> learned; task #543 -> done",
+   "sim_time": "2026-06-23T00:00:00.000Z",
+   "created_at": "2026-06-26T10:01:30.251Z"
+  },
+  {
+   "id": "1784",
+   "agent": "growth",
+   "action": "llm cycle",
+   "rationale": "The community engagement tasks are prioritized but not yet started. Starting with engaging the community on leaderboard improvements. | task already open #272: Engage Community on Leaderboard Improvements; posted to community: Hey everyone! We're excited to see how our community is opti",
+   "sim_time": "2026-06-23T00:00:00.000Z",
+   "created_at": "2026-06-26T10:01:27.637Z"
+  },
+  {
+   "id": "1783",
+   "agent": "finance",
+   "action": "llm cycle",
+   "rationale": "Book revenue for sim day 179 based on captured savings and grid services payments. | ledger already up to date; task #544 -> done",
+   "sim_time": "2026-06-23T00:00:00.000Z",
+   "created_at": "2026-06-26T10:01:23.941Z"
+  },
+  {
+   "id": "1782",
+   "agent": "finance",
+   "action": "llm cycle",
+   "rationale": "Book revenue for the latest sim day based on captured savings and grid services payments. | ledger already up to date; created task #544: Revenue booked for sim day 179",
+   "sim_time": "2026-06-23T00:00:00.000Z",
+   "created_at": "2026-06-26T10:00:53.040Z"
+  },
+  {
+   "id": "1781",
+   "agent": "ceo",
+   "action": "llm cycle",
+   "rationale": "The fleet is performing well, but there are several homes below their optimal performance. Prioritize improving forecast accuracy for these homes. | task already open #482: Improve forecast for new_home_010; created task #542: Review and adjust strategy for phi_test; created task #543: Analyze delta_home performance and optimize",
+   "sim_time": "2026-06-23T00:00:00.000Z",
+   "created_at": "2026-06-26T10:00:47.502Z"
+  },
+  {
+   "id": "1780",
+   "agent": "support",
+   "action": "llm cycle",
+   "rationale": "No open tickets or escalated issues require immediate attention. The fleet is stable with no new connection errors reported. | ",
+   "sim_time": "2026-06-23T00:00:00.000Z",
+   "created_at": "2026-06-26T10:00:44.365Z"
+  },
+  {
+   "id": "1779",
+   "agent": "trading",
+   "action": "llm cycle",
+   "rationale": "new_home_010 has the lowest pct_of_optimal among homes with both solar and EV, indicating room for improvement by learning its routine. | no change for new_home_010: new_home_010 already on learned; set new_home_010 forecast model -> learned",
+   "sim_time": "2026-06-23T00:00:00.000Z",
+   "created_at": "2026-06-26T10:00:43.087Z"
+  },
+  {
+   "id": "1778",
+   "agent": "finance",
+   "action": "llm cycle",
+   "rationale": "Book revenue for the latest sim day given there were trades and it hasn't been booked yet. | ledger already up to date",
+   "sim_time": "2026-06-23T00:00:00.000Z",
+   "created_at": "2026-06-26T10:00:22.661Z"
+  },
+  {
+   "id": "1777",
+   "agent": "support",
+   "action": "llm cycle",
+   "rationale": "No open tickets or escalated issues require immediate attention. The fleet homes are all performing within expected ranges based on the leaderboard. No new tasks need to be created. | ",
+   "sim_time": "2026-06-23T00:00:00.000Z",
+   "created_at": "2026-06-26T09:59:59.537Z"
+  },
+  {
+   "id": "1776",
+   "agent": "trading",
+   "action": "llm cycle",
+   "rationale": "new_home_010 has the lowest pct_of_optimal among homes with solar and EV, indicating room for improvement by learning its routine. | no change for new_home_010: new_home_010 already on learned; set new_home_010 forecast model -> learned; task #188 -> doing",
+   "sim_time": "2026-06-23T00:00:00.000Z",
+   "created_at": "2026-06-26T09:59:57.836Z"
+  },
+  {
+   "id": "1775",
+   "agent": "finance",
+   "action": "llm cycle",
+   "rationale": "Book the revenue for the latest sim day given there were trades and it hasn't been booked yet. | ledger already up to date",
+   "sim_time": "2026-06-23T00:00:00.000Z",
+   "created_at": "2026-06-26T09:59:52.471Z"
+  },
+  {
+   "id": "1774",
+   "agent": "growth",
+   "action": "llm cycle",
+   "rationale": "The community engagement tasks are still open and need attention to keep the community active and engaged. | task already open #57: Engage community on energy optimization tips; task already open #259: Engage new homes in community; posted to community: Hey everyone! Check out the latest leaderboard and see how y",
+   "sim_time": "2026-06-23T00:00:00.000Z",
+   "created_at": "2026-06-26T09:59:27.578Z"
+  },
+  {
+   "id": "1773",
+   "agent": "finance",
+   "action": "llm cycle",
+   "rationale": "Final sim day revenue needs to be booked. | ledger already up to date; task #540 -> done",
+   "sim_time": "2026-06-23T00:00:00.000Z",
+   "created_at": "2026-06-26T09:59:22.508Z"
+  },
+  {
+   "id": "1772",
+   "agent": "support",
+   "action": "llm cycle",
+   "rationale": "No open tickets or escalated issues require immediate attention. The fleet is performing well overall with no apparent connection issues. | ",
+   "sim_time": "2026-06-23T00:00:00.000Z",
+   "created_at": "2026-06-26T09:59:14.688Z"
+  },
+  {
+   "id": "1771",
+   "agent": "trading",
+   "action": "llm cycle",
+   "rationale": "new_home_010 has the lowest pct_of_optimal among homes with solar and EV, indicating room for improvement by learning its routine. | no change for new_home_010: new_home_010 already on learned; set new_home_010 forecast model -> learned; task already open #524: Improve forecast accuracy for new_home_010; task #541 -> done",
+   "sim_time": "2026-06-23T00:00:00.000Z",
+   "created_at": "2026-06-26T09:59:13.076Z"
+  },
+  {
+   "id": "1770",
+   "agent": "ceo",
+   "action": "llm cycle",
+   "rationale": "The fleet is performing well, but there are still homes below optimal performance. Focus on improving forecast accuracy for these homes. | task already open #482: Improve forecast for new_home_010; task already open #487: Analyze performance of phi_test; created task #541: Review model parameters for delta_varied",
+   "sim_time": "2026-06-23T00:00:00.000Z",
+   "created_at": "2026-06-26T09:59:09.439Z"
+  },
+  {
+   "id": "1769",
+   "agent": "finance",
+   "action": "llm cycle",
+   "rationale": "Book the revenue from customer savings and grid services for the final sim day. | ledger already up to date; created task #540: Booked final sim day revenue",
+   "sim_time": "2026-06-23T00:00:00.000Z",
+   "created_at": "2026-06-26T09:58:52.985Z"
+  },
+  {
+   "id": "1768",
+   "agent": "support",
+   "action": "llm cycle",
+   "rationale": "No open tickets or escalated issues require immediate attention. The fleet homes are all operational and there are no new community questions. Checking the open tasks, none are directly related to support actions this cycle. | ",
+   "sim_time": "2026-06-23T00:00:00.000Z",
+   "created_at": "2026-06-26T09:58:28.322Z"
+  },
+  {
+   "id": "1767",
+   "agent": "trading",
+   "action": "llm cycle",
+   "rationale": "new_home_010 has the lowest pct_of_optimal among homes with both solar and EV, indicating room for improvement by learning its routine. | no change for new_home_010: new_home_010 already on learned; set new_home_010 forecast model -> learned; task already open #526: Evaluate performance of new_home_010 after model upgrade; task #538 -> done",
+   "sim_time": "2026-06-23T00:00:00.000Z",
+   "created_at": "2026-06-26T09:58:26.619Z"
+  },
+  {
+   "id": "1766",
+   "agent": "finance",
+   "action": "llm cycle",
+   "rationale": "The P&L milestone has been reached and needs to be acknowledged. | task #539 -> done",
+   "sim_time": "2026-06-23T00:00:00.000Z",
+   "created_at": "2026-06-26T09:58:22.929Z"
+  },
+  {
+   "id": "1765",
+   "agent": "finance",
+   "action": "llm cycle",
+   "rationale": "Book revenue for the final sim day based on captured savings and grid services. | ledger already up to date; created task #539: P&L milestone reached for simulation",
+   "sim_time": "2026-06-23T00:00:00.000Z",
+   "created_at": "2026-06-26T09:57:52.362Z"
+  },
+  {
+   "id": "1764",
+   "agent": "ceo",
+   "action": "llm cycle",
+   "rationale": "The fleet is performing well, but there are several homes below their optimal performance. Prioritize improving forecast accuracy for these homes. | task already open #482: Improve forecast for new_home_010; task already open #487: Analyze performance of phi_test; created task #538: Enhance strategy for delta_home",
+   "sim_time": "2026-06-23T00:00:00.000Z",
+   "created_at": "2026-06-26T09:57:43.555Z"
+  },
+  {
+   "id": "1763",
+   "agent": "support",
+   "action": "llm cycle",
+   "rationale": "No open tickets or escalated issues require immediate attention. The fleet is performing well overall, with no apparent connection errors or community inquiries to address. | ",
+   "sim_time": "2026-06-23T00:00:00.000Z",
+   "created_at": "2026-06-26T09:57:40.291Z"
+  },
+  {
+   "id": "1762",
+   "agent": "trading",
+   "action": "llm cycle",
+   "rationale": "new_home_010 has the lowest pct_of_optimal among homes with both solar and EV, indicating room for improvement by learning its routine. | no change for new_home_010: new_home_010 already on learned; set new_home_010 forecast model -> learned; task already open #524: Improve forecast accuracy for new_home_010",
+   "sim_time": "2026-06-23T00:00:00.000Z",
+   "created_at": "2026-06-26T09:57:38.891Z"
+  },
+  {
+   "id": "1761",
+   "agent": "growth",
+   "action": "llm cycle",
+   "rationale": "The leaderboard shows room for improvement among newer homes. Promoting model upgrades can help them capture more savings. | task already open #491: Engage new homes with model upgrade tips; posted to community: Hey everyone! Noticed some of our newer homes could benefit ",
+   "sim_time": "2026-06-23T00:00:00.000Z",
+   "created_at": "2026-06-26T09:57:27.181Z"
+  },
+  {
+   "id": "1760",
+   "agent": "finance",
+   "action": "llm cycle",
+   "rationale": "Book revenue for sim day 179 based on captured savings and grid services payments. | ledger already up to date; task #537 -> done",
+   "sim_time": "2026-06-23T00:00:00.000Z",
+   "created_at": "2026-06-26T09:57:21.922Z"
+  },
+  {
+   "id": "1759",
+   "agent": "support",
+   "action": "llm cycle",
+   "rationale": "No open tickets or escalated issues require immediate attention. The fleet homes are all performing within acceptable ranges based on the provided leaderboard. There are no new tasks to address in the support category. | ",
+   "sim_time": "2026-06-23T00:00:00.000Z",
+   "created_at": "2026-06-26T09:56:57.321Z"
+  },
+  {
+   "id": "1758",
+   "agent": "trading",
+   "action": "llm cycle",
+   "rationale": "new_home_010 has the lowest pct_of_optimal among homes with both solar and EV, indicating room for improvement. Learning its routine could enhance its forecast accuracy. | no change for new_home_010: new_home_010 already on learned; set new_home_010 forecast model -> learned; task already open #526: Evaluate performance of new_home_010 after model upgrade; task #536 -> done",
+   "sim_time": "2026-06-23T00:00:00.000Z",
+   "created_at": "2026-06-26T09:56:55.391Z"
+  },
+  {
+   "id": "1757",
+   "agent": "finance",
+   "action": "llm cycle",
+   "rationale": "Book revenue for the latest sim day based on captured savings and grid services payments. | ledger already up to date; created task #537: Revenue booked for sim day 179",
+   "sim_time": "2026-06-23T00:00:00.000Z",
+   "created_at": "2026-06-26T09:56:52.060Z"
+  }
+ ],
+ "approvals": [],
+ "sim": {
+  "sim_now": "2026-06-24T00:00:00.000Z",
+  "sim_start": "2025-12-27T00:00:00.000Z",
+  "sim_days": "179",
+  "customer_savings": "6210.0744"
+ }
+}

@@ -11,7 +11,7 @@ import ActivityFeed from "@/components/ActivityFeed";
 import Approvals from "@/components/Approvals";
 import CeoReport from "@/components/CeoReport";
 
-const POLL_MS = 4000;
+const POLL_MS = Number(process.env.NEXT_PUBLIC_SNAPSHOT_POLL_MS) || 10_000;
 
 export default function Page() {
   const [snap, setSnap] = useState<Snapshot | null>(null);
@@ -22,6 +22,11 @@ export default function Page() {
     async function load() {
       try {
         const res = await fetch("/api/snapshot", { cache: "no-store" });
+        const ct = res.headers.get("content-type") ?? "";
+        if (!ct.includes("application/json")) {
+          const text = await res.text();
+          throw new Error(text.slice(0, 120) || `HTTP ${res.status}`);
+        }
         const data: Snapshot = await res.json();
         if (!alive) return;
         if (data.error) setErr(data.error);
@@ -55,9 +60,9 @@ export default function Page() {
             </div>
           )}
           <Link href="/judge" className="navlink">judge sandbox →</Link>
-          <div className="live">
+          <div className="live" title="Replaying the swarm's final run — no live agents">
             <span className="pulse" />
-            live · refreshes every {POLL_MS / 1000}s
+            live replay · refreshes every {POLL_MS / 1000}s
           </div>
         </div>
       </div>
